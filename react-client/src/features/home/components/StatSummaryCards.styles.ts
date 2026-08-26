@@ -51,12 +51,7 @@ export const iconBadge = cva({
     width: "1.25rem",
     height: "1.25rem",
     flexShrink: "0",
-    borderRadius: "md",
     fontSize: "xs",
-    backgroundColor: "background.main",
-    borderWidth: "1px",
-    borderStyle: "solid",
-    borderColor: "border.primary",
   },
   variants: {
     accent: {
