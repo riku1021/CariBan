@@ -98,36 +98,6 @@ export const item = cva({
   },
 });
 
-export const check = cva({
-  base: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "1.15rem",
-    height: "1.15rem",
-    borderRadius: "full",
-    borderWidth: "2px",
-    borderStyle: "solid",
-    flexShrink: "0",
-    fontSize: "xs",
-    lineHeight: "none",
-  },
-  variants: {
-    completed: {
-      true: {
-        borderColor: "brand.primary.main",
-        backgroundColor: "brand.primary.main",
-        color: "white",
-      },
-      false: {
-        borderColor: "border.primary",
-        backgroundColor: "background.sub",
-        color: "transparent",
-      },
-    },
-  },
-});
-
 export const body = css({
   display: "flex",
   flexDirection: "column",

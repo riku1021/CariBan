@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import { CompletionCheckbox } from "@/components/CompletionCheckbox";
+
 import { sortTodayTasks } from "../sort";
 import type { TodayTask } from "../types";
 import * as layout from "./HomePage.styles";
@@ -75,9 +77,7 @@ export function TodayTasksCard({ tasks }: TodayTasksCardProps) {
               className={styles.item({ completed: task.completed })}
               aria-label={`${task.completed ? "完了" : "未完了"} ${task.companyName} ${task.title}${task.time ? ` ${task.time}` : ""}`}
             >
-              <span className={styles.check({ completed: task.completed })} aria-hidden="true">
-                ✓
-              </span>
+              <CompletionCheckbox checked={task.completed} />
               <div className={styles.body}>
                 <p className={styles.company}>{task.companyName}</p>
                 <p className={styles.title({ completed: task.completed })}>{task.title}</p>

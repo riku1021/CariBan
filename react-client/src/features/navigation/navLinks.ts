@@ -1,5 +1,6 @@
 import {
   FaBuilding as Building,
+  FaCalendarAlt as Calendar,
   FaClipboardList as ClipboardList,
   FaTasks as Tasks,
 } from "react-icons/fa";
@@ -29,8 +30,13 @@ export const navLinks: NavLink[] = [
   },
   {
     to: "/tasks",
-    label: "タスク",
+    label: "タスク一覧",
     icon: Tasks,
+  },
+  {
+    to: "/schedules",
+    label: "予定一覧",
+    icon: Calendar,
   },
   {
     to: "/profile",

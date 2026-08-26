@@ -4,9 +4,6 @@ export const profileMock: ProfileData = {
   basic: {
     initials: "石",
     name: "石川 陸",
-    school: "大阪国際工科専門職大学",
-    major: "情報工学科 AI戦略コース",
-    graduation: "27卒",
     bio: "長期インターンと個人開発を通じて、課題の整理から実装・運用まで一貫して取り組んできました。就活では技術と事業の両面から価値を出せるエンジニアを目指しています。",
   },
   completeness: {

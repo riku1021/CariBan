@@ -17,6 +17,7 @@ import { Route as CompaniesIndexRouteImport } from './routes/companies/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
 import { Route as PartnerIndexRouteImport } from './routes/partner/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as SchedulesIndexRouteImport } from './routes/schedules/index'
 import { Route as SelectionsIndexRouteImport } from './routes/selections/index'
 import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as UserIndexRouteImport } from './routes/user/index'
@@ -62,6 +63,11 @@ const ProfileIndexRoute = ProfileIndexRouteImport.update({
   path: '/profile/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SchedulesIndexRoute = SchedulesIndexRouteImport.update({
+  id: '/schedules/',
+  path: '/schedules/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SelectionsIndexRoute = SelectionsIndexRouteImport.update({
   id: '/selections/',
   path: '/selections/',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/contact/': typeof ContactIndexRoute
   '/partner/': typeof PartnerIndexRoute
   '/profile/': typeof ProfileIndexRoute
+  '/schedules/': typeof SchedulesIndexRoute
   '/selections/': typeof SelectionsIndexRoute
   '/tasks/': typeof TasksIndexRoute
   '/user/': typeof UserIndexRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactIndexRoute
   '/partner': typeof PartnerIndexRoute
   '/profile': typeof ProfileIndexRoute
+  '/schedules': typeof SchedulesIndexRoute
   '/selections': typeof SelectionsIndexRoute
   '/tasks': typeof TasksIndexRoute
   '/user': typeof UserIndexRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/contact/': typeof ContactIndexRoute
   '/partner/': typeof PartnerIndexRoute
   '/profile/': typeof ProfileIndexRoute
+  '/schedules/': typeof SchedulesIndexRoute
   '/selections/': typeof SelectionsIndexRoute
   '/tasks/': typeof TasksIndexRoute
   '/user/': typeof UserIndexRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/contact/'
     | '/partner/'
     | '/profile/'
+    | '/schedules/'
     | '/selections/'
     | '/tasks/'
     | '/user/'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/partner'
     | '/profile'
+    | '/schedules'
     | '/selections'
     | '/tasks'
     | '/user'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/contact/'
     | '/partner/'
     | '/profile/'
+    | '/schedules/'
     | '/selections/'
     | '/tasks/'
     | '/user/'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   ContactIndexRoute: typeof ContactIndexRoute
   PartnerIndexRoute: typeof PartnerIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
+  SchedulesIndexRoute: typeof SchedulesIndexRoute
   SelectionsIndexRoute: typeof SelectionsIndexRoute
   TasksIndexRoute: typeof TasksIndexRoute
   UserIndexRoute: typeof UserIndexRoute
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schedules/': {
+      id: '/schedules/'
+      path: '/schedules'
+      fullPath: '/schedules/'
+      preLoaderRoute: typeof SchedulesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/selections/': {
       id: '/selections/'
       path: '/selections'
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactIndexRoute: ContactIndexRoute,
   PartnerIndexRoute: PartnerIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
+  SchedulesIndexRoute: SchedulesIndexRoute,
   SelectionsIndexRoute: SelectionsIndexRoute,
   TasksIndexRoute: TasksIndexRoute,
   UserIndexRoute: UserIndexRoute,

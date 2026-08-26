@@ -57,11 +57,6 @@ export function ProfileSummarySection({ basic, completeness }: ProfileSummarySec
           </span>
           <div className={styles.identityText}>
             <h2 className={styles.name}>{basic.name}</h2>
-            <div className={styles.metaRow}>
-              <span className={styles.metaChip}>{basic.school}</span>
-              <span className={styles.metaChip}>{basic.major}</span>
-              <span className={styles.metaChipAccent}>{basic.graduation}</span>
-            </div>
           </div>
           <div className={styles.bioPanel}>
             <p className={styles.bioLabel}>自己紹介</p>

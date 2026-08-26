@@ -1,9 +1,6 @@
 export type ProfileBasic = {
   initials: string;
   name: string;
-  school: string;
-  major: string;
-  graduation: string;
   bio: string;
 };
 

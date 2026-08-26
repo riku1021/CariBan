@@ -65,7 +65,7 @@ export const avatar = css({
 export const identityText = css({
   display: "flex",
   flexDirection: "column",
-  gap: "1px",
+  justifyContent: "center",
   minWidth: "0",
   flexShrink: "0",
 });
@@ -80,50 +80,12 @@ export const name = css({
   letterSpacing: "tight",
 });
 
-export const metaRow = css({
-  display: "flex",
-  flexWrap: "wrap",
-  alignItems: "center",
-  gap: "2px",
-});
-
-export const metaChip = css({
-  display: "inline-flex",
-  alignItems: "center",
-  paddingInline: "xs",
-  paddingBlock: "0",
-  borderRadius: "full",
-  backgroundColor: "background.main",
-  borderWidth: "1px",
-  borderStyle: "solid",
-  borderColor: "border.primary",
-  color: "text.sub",
-  fontSize: "xs",
-  fontWeight: "medium",
-  whiteSpace: "nowrap",
-  lineHeight: "tight",
-});
-
-export const metaChipAccent = css({
-  display: "inline-flex",
-  alignItems: "center",
-  paddingInline: "xs",
-  paddingBlock: "0",
-  borderRadius: "full",
-  backgroundColor: "brand.primary.light",
-  color: "brand.primary.main",
-  fontSize: "xs",
-  fontWeight: "semibold",
-  whiteSpace: "nowrap",
-  lineHeight: "tight",
-});
-
 export const bioPanel = css({
   display: "flex",
   flexDirection: "column",
   gap: "1px",
-  flex: "1",
-  minWidth: "12rem",
+  flex: "1 1 0",
+  minWidth: "0",
   paddingInlineStart: "sm",
   paddingBlock: "0",
   borderInlineStartWidth: "1px",
