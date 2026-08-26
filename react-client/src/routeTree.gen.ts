@@ -13,8 +13,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as R404IndexRouteImport } from './routes/404/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AlertIndexRouteImport } from './routes/alert/index'
+import { Route as CompaniesIndexRouteImport } from './routes/companies/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
 import { Route as PartnerIndexRouteImport } from './routes/partner/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
+import { Route as SelectionsIndexRouteImport } from './routes/selections/index'
+import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 
@@ -38,6 +42,11 @@ const AlertIndexRoute = AlertIndexRouteImport.update({
   path: '/alert/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
+  id: '/companies/',
+  path: '/companies/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactIndexRoute = ContactIndexRouteImport.update({
   id: '/contact/',
   path: '/contact/',
@@ -46,6 +55,21 @@ const ContactIndexRoute = ContactIndexRouteImport.update({
 const PartnerIndexRoute = PartnerIndexRouteImport.update({
   id: '/partner/',
   path: '/partner/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/profile/',
+  path: '/profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SelectionsIndexRoute = SelectionsIndexRouteImport.update({
+  id: '/selections/',
+  path: '/selections/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TasksIndexRoute = TasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UserIndexRoute = UserIndexRouteImport.update({
@@ -64,8 +88,12 @@ export interface FileRoutesByFullPath {
   '/404/': typeof R404IndexRoute
   '/admin/': typeof AdminIndexRoute
   '/alert/': typeof AlertIndexRoute
+  '/companies/': typeof CompaniesIndexRoute
   '/contact/': typeof ContactIndexRoute
   '/partner/': typeof PartnerIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/selections/': typeof SelectionsIndexRoute
+  '/tasks/': typeof TasksIndexRoute
   '/user/': typeof UserIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
 }
@@ -74,8 +102,12 @@ export interface FileRoutesByTo {
   '/404': typeof R404IndexRoute
   '/admin': typeof AdminIndexRoute
   '/alert': typeof AlertIndexRoute
+  '/companies': typeof CompaniesIndexRoute
   '/contact': typeof ContactIndexRoute
   '/partner': typeof PartnerIndexRoute
+  '/profile': typeof ProfileIndexRoute
+  '/selections': typeof SelectionsIndexRoute
+  '/tasks': typeof TasksIndexRoute
   '/user': typeof UserIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
 }
@@ -85,8 +117,12 @@ export interface FileRoutesById {
   '/404/': typeof R404IndexRoute
   '/admin/': typeof AdminIndexRoute
   '/alert/': typeof AlertIndexRoute
+  '/companies/': typeof CompaniesIndexRoute
   '/contact/': typeof ContactIndexRoute
   '/partner/': typeof PartnerIndexRoute
+  '/profile/': typeof ProfileIndexRoute
+  '/selections/': typeof SelectionsIndexRoute
+  '/tasks/': typeof TasksIndexRoute
   '/user/': typeof UserIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
 }
@@ -97,8 +133,12 @@ export interface FileRouteTypes {
     | '/404/'
     | '/admin/'
     | '/alert/'
+    | '/companies/'
     | '/contact/'
     | '/partner/'
+    | '/profile/'
+    | '/selections/'
+    | '/tasks/'
     | '/user/'
     | '/admin/dashboard/'
   fileRoutesByTo: FileRoutesByTo
@@ -107,8 +147,12 @@ export interface FileRouteTypes {
     | '/404'
     | '/admin'
     | '/alert'
+    | '/companies'
     | '/contact'
     | '/partner'
+    | '/profile'
+    | '/selections'
+    | '/tasks'
     | '/user'
     | '/admin/dashboard'
   id:
@@ -117,8 +161,12 @@ export interface FileRouteTypes {
     | '/404/'
     | '/admin/'
     | '/alert/'
+    | '/companies/'
     | '/contact/'
     | '/partner/'
+    | '/profile/'
+    | '/selections/'
+    | '/tasks/'
     | '/user/'
     | '/admin/dashboard/'
   fileRoutesById: FileRoutesById
@@ -128,8 +176,12 @@ export interface RootRouteChildren {
   R404IndexRoute: typeof R404IndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AlertIndexRoute: typeof AlertIndexRoute
+  CompaniesIndexRoute: typeof CompaniesIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
   PartnerIndexRoute: typeof PartnerIndexRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+  SelectionsIndexRoute: typeof SelectionsIndexRoute
+  TasksIndexRoute: typeof TasksIndexRoute
   UserIndexRoute: typeof UserIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
 }
@@ -164,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlertIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/companies/': {
+      id: '/companies/'
+      path: '/companies'
+      fullPath: '/companies/'
+      preLoaderRoute: typeof CompaniesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact/': {
       id: '/contact/'
       path: '/contact'
@@ -176,6 +235,27 @@ declare module '@tanstack/react-router' {
       path: '/partner'
       fullPath: '/partner/'
       preLoaderRoute: typeof PartnerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/': {
+      id: '/profile/'
+      path: '/profile'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/selections/': {
+      id: '/selections/'
+      path: '/selections'
+      fullPath: '/selections/'
+      preLoaderRoute: typeof SelectionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tasks/': {
+      id: '/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof TasksIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/user/': {
@@ -200,8 +280,12 @@ const rootRouteChildren: RootRouteChildren = {
   R404IndexRoute: R404IndexRoute,
   AdminIndexRoute: AdminIndexRoute,
   AlertIndexRoute: AlertIndexRoute,
+  CompaniesIndexRoute: CompaniesIndexRoute,
   ContactIndexRoute: ContactIndexRoute,
   PartnerIndexRoute: PartnerIndexRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+  SelectionsIndexRoute: SelectionsIndexRoute,
+  TasksIndexRoute: TasksIndexRoute,
   UserIndexRoute: UserIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
 }

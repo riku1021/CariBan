@@ -43,12 +43,58 @@ export type DashboardCalendar = {
   days: CalendarDay[];
 };
 
+/**
+ * タスク: 自分が完了する作業（提出・対策・作成など）。完了チェック対象。
+ * 予定（CalendarEventKind）とは異なり、相手との確定枠ではなく ToDo。
+ */
+export const TASK_KINDS = ["submission", "webTestPrep", "esDraft", "other"] as const;
+
+export type TaskKind = (typeof TASK_KINDS)[number];
+
+export const TASK_KIND_LABELS: Record<TaskKind, string> = {
+  submission: "提出物",
+  webTestPrep: "Webテスト対策",
+  esDraft: "ES作成",
+  other: "その他",
+};
+
 export type TodayTask = {
   id: string;
   title: string;
   companyName: string;
   completed: boolean;
   time: string | null;
+};
+
+export type CreateTaskInput = {
+  kind: TaskKind;
+  title: string;
+  dueDate: string;
+  time: string | null;
+  companyId: string | null;
+  companyName: string;
+  stageId: string | null;
+};
+
+/**
+ * 予定: カレンダーに載る確定枠（面接・説明会・Webテスト実施・締切など）。
+ * タスクとは異なり、日時レンジとイベント種別を持つ。
+ */
+export type CreateScheduleInput = {
+  kind: CalendarEventKind;
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  companyId: string;
+  companyName: string;
+  stageId: string | null;
+};
+
+export type CompanyOption = {
+  id: string;
+  name: string;
+  stages: SelectionStage[];
 };
 
 export type DeadlineUrgency = "tomorrow" | "inTwoDays" | "inThreeDays";

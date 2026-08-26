@@ -1,6 +1,6 @@
 import { extractApiErrorMessage } from "@/lib/api/extractApiErrorMessage";
 
-import { useDashboardQuery } from "../hooks/useDashboardQuery";
+import { useDashboardWithEntries } from "../hooks/useDashboardWithEntries";
 import { CompanyProgressCard } from "./CompanyProgressCard";
 import * as styles from "./HomePage.styles";
 import { MonthCalendarCard } from "./MonthCalendarCard";
@@ -10,7 +10,7 @@ import { UpcomingDeadlinesCard } from "./UpcomingDeadlinesCard";
 import { UpcomingSelectionsCard } from "./UpcomingSelectionsCard";
 
 export function HomePage() {
-  const { data, isPending, isError, error } = useDashboardQuery();
+  const { data, isPending, isError, error } = useDashboardWithEntries();
 
   if (isPending) {
     return (

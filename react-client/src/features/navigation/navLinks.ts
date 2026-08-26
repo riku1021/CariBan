@@ -1,10 +1,9 @@
 import {
-  FaBell as Bell,
-  FaEnvelope as Envelope,
-  FaExclamationTriangle as ExclamationTriangle,
+  FaBuilding as Building,
+  FaClipboardList as ClipboardList,
+  FaTasks as Tasks,
 } from "react-icons/fa";
 import { IoHome as Home } from "react-icons/io5";
-import { MdAdminPanelSettings as AdminSettings } from "react-icons/md";
 import { VscAccount as Account } from "react-icons/vsc";
 
 import type { NavLink } from "./types";
@@ -19,28 +18,23 @@ export const navLinks: NavLink[] = [
     icon: Home,
   },
   {
-    to: "/user",
-    label: "ユーザー",
+    to: "/companies",
+    label: "企業一覧",
+    icon: Building,
+  },
+  {
+    to: "/selections",
+    label: "選考管理",
+    icon: ClipboardList,
+  },
+  {
+    to: "/tasks",
+    label: "タスク",
+    icon: Tasks,
+  },
+  {
+    to: "/profile",
+    label: "プロフィール",
     icon: Account,
-  },
-  {
-    to: "/admin",
-    label: "管理者",
-    icon: AdminSettings,
-  },
-  {
-    to: "/contact",
-    label: "お問い合わせ",
-    icon: Envelope,
-  },
-  {
-    to: "/alert",
-    label: "アラート",
-    icon: Bell,
-  },
-  {
-    to: "/404",
-    label: "404",
-    icon: ExclamationTriangle,
   },
 ];
