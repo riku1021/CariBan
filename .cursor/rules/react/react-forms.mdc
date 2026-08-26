@@ -1,0 +1,23 @@
+---
+description: React フォーム実装のアクセシビリティと状態パターン
+globs: react-client/src/features/**/*Form*.tsx,react-client/src/features/contact/**/*.{ts,tsx}
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# React Forms
+
+現行のお問い合わせは制御の薄いネイティブ form（`ContactPage`）。新規フォームも既存トーンに合わせる。
+
+## ルール
+
+- `label` と入力は `htmlFor` / `id` で紐付ける
+- 送信成功・エラーは `role="status"` や明確な文言で伝える
+- `autoComplete` を適切に付与する
+- 送信ハンドラで `preventDefault()` する
+- スタイルは隣接 `*.styles.ts` + Panda。見た目変更は事前承認
+- バリデーションライブラリを新たに入れる場合は必ず承認を取る
+
+## 参照
+
+- `@react-client/src/features/contact/components/ContactPage.tsx`

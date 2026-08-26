@@ -1,0 +1,35 @@
+---
+description: Go の依存性注入・bootstrap 配線規約
+globs: go-server/internal/bootstrap/**/*.go,go-server/cmd/**/*.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Dependency Injection（Go）
+
+中心は `@go-server/internal/bootstrap/server.go`（コンストラクタ注入）。
+
+## パターン
+
+1. `bootstrap.New(cfg, log)` で Repository → Domain Service → Command/Query → Handler を組み立てる
+2. Handler は `NewHandler(deps...)` で依存を受け取る（グローバル可変状態に頼らない）
+3. `Handler.Register(mux)` でルート登録
+4. `cmd/api/main.go` は起動・シグナル・Shutdown のみ担当
+
+```go
+createUser := usercmd.NewCreateUserCommand(userService, dispatcher)
+userHandler := userhttp.NewHandler(createUser, updateProfile, ...)
+userHandler.Register(mux)
+```
+
+## ルール
+
+- ハンドラー内で Repository を直接 `New` しない
+- ユースケース生成も bootstrap に集約する
+- テストでは同じ `NewXxx` で in-memory / NopDispatcher を差し替える
+- フレームワーク製 DI コンテナを勝手に追加しない
+
+## 参照
+
+- `@go-server/internal/bootstrap/server.go`
+- `@go-server/cmd/api/main.go`

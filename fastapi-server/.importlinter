@@ -1,0 +1,73 @@
+# =============================================================================
+# Import Linter - Pragmatic Clean Architecture / Vertical Slice 契約
+# =============================================================================
+# このプロジェクトは src をルートに、以下のような層構造を持ちます。
+# 外側の層は内側の層を import してよいが、内側は外側を import してはならない。
+#
+# 層の順序（外側 → 内側）:
+#   bootstrap      - アプリケーション全体の組み立て（FastAPI, DI, ルーター集約など）
+#   modules.*.adapters / modules.*.infrastructure - HTTP やリポジトリ実装などのシェル
+#   modules.*.application                         - ユースケース / CQRS（ドメインとポートに依存）
+#   modules.*.domain                              - ドメインモデル（他層に依存しない）
+#   shared                                         - ドメイン基盤・イベントポート・HTTP 例外ハンドラ
+#
+# アーキテクチャ上の真実は `bootstrap/`・`shared/`・`modules/<context>/` に集約されています。
+# shared はドメイン基盤・イベントポート・HTTP 例外ハンドラ。技術実装は infrastructure。
+# =============================================================================
+
+[importlinter]
+root_package = src
+exclude_type_checking_imports = True
+include_external_packages = True
+
+###############################################################################
+# 1. Core からフレームワーク/インフラ詳細への直接依存を禁止
+###############################################################################
+
+[importlinter:contract:core-no-framework-deps]
+name = Core (domain/application) must not depend on frameworks
+type = forbidden
+source_modules =
+    src.modules.*.domain
+    src.modules.*.application
+forbidden_modules =
+    fastapi
+    starlette
+    sqlalchemy
+    httpx
+    requests
+
+###############################################################################
+# 2. モジュール内レイヤリング（adapters/infrastructure → application → domain）
+#    ※ すべての modules.<context> に共通ルールを適用
+###############################################################################
+
+[importlinter:contract:modules-all-layers]
+name = All modules layering
+type = layers
+containers =
+    src.modules.*
+layers =
+    adapters
+    infrastructure
+    application
+    domain
+
+###############################################################################
+# 3. モジュール境界の保護
+###############################################################################
+
+[importlinter:contract:core-no-shell-deps]
+name = Core (domain/application) must not depend on internal shell (infrastructure/shared)
+type = forbidden
+source_modules =
+    src.modules.*.domain
+    src.modules.*.application
+forbidden_modules =
+    src.infrastructure
+
+[importlinter:contract:modules-independence]
+name = All feature modules are independent
+type = independence
+modules =
+    src.modules.*

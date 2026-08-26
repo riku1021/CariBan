@@ -1,0 +1,8 @@
+"""user モジュールの HTTP アダプター。
+
+`modules.user.adapters.http.handler` が提供する `router` を公開します。
+"""
+
+from .handler import router
+
+__all__ = ["router"]

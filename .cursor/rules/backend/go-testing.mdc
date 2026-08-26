@@ -1,0 +1,31 @@
+---
+description: go-server の go test 全体方針
+globs: go-server/**/*_test.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Testing（Go）
+
+## ツール
+
+- 標準 `testing` パッケージ
+- HTTP: `net/http/httptest`
+- 外部 I/O が不要な箇所は in-memory Repository / NopDispatcher を使う
+
+## 方針
+
+- テストファイルは対象と同パッケージ隣の `*_test.go`（必要なら `xxx_test` 外部テストパッケージ）
+- 可能なテストは `t.Parallel()` する
+- domain はフレームワーク非依存で単体テストする
+- HTTP はステータスコードとレスポンス shape を検証する
+- 過度なモックライブラリ導入は避け、Port 実装の差し替えを優先
+
+```sh
+cd go-server && go test ./...
+```
+
+## 参照タイミング
+
+- ハンドラー: `go-testing-handlers.mdc`
+- ドメイン / レイヤ: `go-testing-layers.mdc`

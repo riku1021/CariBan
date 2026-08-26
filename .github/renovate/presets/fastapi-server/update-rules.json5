@@ -1,0 +1,83 @@
+{
+  "description": "Renovate fastapi-server update layer: fastapi-server 配下（pep621/pyenv/dockerfile）の branch戦略・更新ルール",
+  "packageRules": [
+    {
+      "description": "branch分離: fastapi-server pep621 更新は fastapi-server-pep621-* ブランチへ",
+      "matchManagers": ["pep621"],
+      "matchFileNames": ["fastapi-server/**"],
+      "additionalBranchPrefix": "fastapi-server-pep621-",
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "branch分離: fastapi-server dockerfile 更新は fastapi-server-docker-* ブランチへ",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["fastapi-server/**"],
+      "additionalBranchPrefix": "fastapi-server-docker-"
+    },
+    {
+      "description": "branch分離: fastapi-server pyenv 更新は fastapi-server-pyenv-* ブランチへ",
+      "matchManagers": ["pyenv"],
+      "matchFileNames": ["fastapi-server/**"],
+      "additionalBranchPrefix": "fastapi-server-pyenv-"
+    },
+    {
+      "description": "fastapi-server: FastAPI ランタイム主要依存を同一PRにまとめる",
+      "groupName": "python-server-runtime",
+      "matchManagers": ["pep621"],
+      "matchFileNames": ["fastapi-server/pyproject.toml"],
+      "matchDepTypes": ["project.dependencies"],
+      "matchPackageNames": [
+        "fastapi",
+        "uvicorn",
+        "uvicorn[standard]",
+        "pydantic",
+        "pydantic-settings",
+        "httpx",
+        "gunicorn",
+        "sqlalchemy",
+        "alembic",
+        "asyncpg",
+        "psycopg",
+        "psycopg[binary]"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "fastapi-server: テスト/静的解析(dev) の minor/patch は自動マージ",
+      "groupName": "python-dev-quality",
+      "matchManagers": ["pep621"],
+      "matchFileNames": ["fastapi-server/pyproject.toml"],
+      "matchDepTypes": ["dependency-groups"],
+      "matchPackageNames": [
+        "pytest",
+        "pytest-asyncio",
+        "pytest-cov",
+        "mypy",
+        "ruff",
+        "import-linter"
+      ],
+      "matchUpdateTypes": ["minor", "patch"],
+      "minimumReleaseAge": "14 days",
+      "automerge": true
+    },
+    {
+      "description": "fastapi-server: Python 主要依存 major はダッシュボード承認後に PR",
+      "matchManagers": ["pep621"],
+      "matchFileNames": ["fastapi-server/pyproject.toml"],
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "fastapi",
+        "uvicorn",
+        "uvicorn[standard]",
+        "pydantic",
+        "pydantic-settings",
+        "httpx",
+        "sqlalchemy",
+        "pytest",
+        "mypy",
+        "ruff"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}

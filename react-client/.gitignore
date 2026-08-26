@@ -1,0 +1,23 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Panda CSS 生成物（pnpm install / panda codegen で再生成）
+src/styled-system
+styled-system
+styled-system-studio
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store

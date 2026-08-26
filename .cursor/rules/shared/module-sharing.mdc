@@ -1,0 +1,27 @@
+---
+description: フロント features とサーバー modules の境界・公開 API 規約
+globs: react-client/src/features/**/index.ts,fastapi-server/src/modules/**/public/**/*.py,fastapi-server/src/modules/**/__init__.py,go-server/internal/modules/**/public/**/*.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Module Sharing
+
+## Frontend（Bulletproof React）
+
+- 外部からの import は必ず `features/<name>/index.ts` 経由
+- feature 同士の深いパス互相参照を避ける
+- 共有したい UI / hook は `components/` / `hooks/` / `atoms/` へ昇格
+
+## Backend（Bounded Context）
+
+- Python: `fastapi-server/src/modules/<ctx>/` / Go: `go-server/internal/modules/<ctx>/`
+- コンテキスト横断は `modules/<ctx>/public/` の公開面経由
+- 他モジュールの `domain` / `application` 内部を直接 import しない
+- 共有カーネルは `shared/`（仕様・イベント基底など）に限定
+
+## API 契約
+
+- フロントの `features/*/api` とサーバー Handler のパス・型を揃える
+- クライアントのエラーメッセージ変換は `extractApiErrorMessage` に集約
+- Go 側の HTTP エラー変換は `internal/shared/http`（`httpx.HandleError`）に集約

@@ -1,0 +1,38 @@
+---
+description: FastAPI 依存性注入（dependencies.py）の規約
+globs: fastapi-server/src/adapter/http/dependencies.py,fastapi-server/src/bootstrap/**/*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Dependency Injection
+
+中心は `@fastapi-server/src/adapter/http/dependencies.py`。
+
+## パターン
+
+1. 起動時に `initialize_dependencies(settings)` でリポジトリ等を初期化
+2. ゲッター関数 + `Annotated[..., Depends(...)]` で型付き Dep を公開
+3. ハンドラーは `CreateUserCommandDep` のようなエイリアスだけを受ける
+4. シャットダウン時は `cleanup_dependencies()`
+
+```python
+# ✅ ハンドラー側
+async def create_user(
+    request: CreateUserRequestModel,
+    usecase: CreateUserCommandDep,
+) -> CreateUserResponseModel:
+    ...
+```
+
+## ルール
+
+- ハンドラー内でリポジトリを直接 `new` しない
+- ユースケース生成も dependencies 経由に集約する
+- テストでは Dep を差し替えやすい境界を保つ
+- グローバル状態の追加は必要最小限。TODO コメントの雛形に従う
+
+## 参照
+
+- `@fastapi-server/src/adapter/http/dependencies.py`
+- `@fastapi-server/src/bootstrap/app_builder.py`

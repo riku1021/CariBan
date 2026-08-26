@@ -1,0 +1,90 @@
+---
+description: React フロントのディレクトリ責務（react-client の ts/tsx）
+globs: react-client/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# フロントエンド設計思想ドキュメント
+
+## 1. 技術スタック概要
+
+| 技術                 | 用途                                                |
+| -------------------- | --------------------------------------------------- |
+| React                | UIライブラリ（コンポーネントベースの開発）          |
+| Vite                 | 高速なモダンビルドツール＋開発サーバー              |
+| pnpm                 | 高速で効率的なパッケージマネージャー                |
+| TanStack Router      | React向けのファイルベースルーティング対応のルーター |
+| TanStack Query       | サーバー状態の取得・キャッシュ                      |
+| Jotai-TanStack-Query | JotaiとTanStack Queryを連携させる拡張               |
+| Panda CSS            | ビルド時生成の型安全なスタイリング                  |
+| Jotai                | プリミティブでシンプルな状態管理ライブラリ          |
+| Axios                | HTTP クライアント（`src/lib/api/axiosClient.ts`）   |
+| Bulletproof React    | スケーラブルで保守しやすい設計ガイドライン          |
+
+## 2. ディレクトリ構成と役割
+
+```
+src/
+├── assets/               # 画像・フォントなどの静的アセット
+├── atoms/                # グローバル共有のJotaiアトム
+├── animations/           # 共通アニメーションコンポーネント
+├── components/           # アプリ全体で再利用可能なUI部品
+├── features/             # 機能単位でのモジュール化（Bulletproof React）
+│   ├── alert/            # アラート検証ページ
+│   ├── contact/          # お問い合わせ
+│   ├── health/           # API 接続確認の例
+│   ├── home/             # トップページ
+│   ├── navigation/       # ドロワー内リンク
+│   └── notFound/         # 404 ページ
+├── hooks/                # グローバル共有のカスタムフック
+├── layouts/              # アプリケーションの共通レイアウト
+├── lib/                  # 横断的な技術基盤（api / query）
+├── routes/               # TanStack Routerに基づくルーティング
+├── styles/               # Panda CSS 用トークン・ベーススタイル
+├── styled-system/        # Panda codegen の生成物（git 管理しない）
+├── types/                # 共通TypeScript型定義
+├── main.tsx              # エントリーポイント
+└── routeTree.gen.ts      # ルート定義ファイル（生成）
+```
+
+## 3. 機能モジュール（Bulletproof React）
+
+```
+features/機能名/
+├── components/
+├── hooks/
+├── api/
+├── atoms/        # 必要な場合のみ
+├── types.ts
+└── index.ts      # 公開API
+```
+
+- `routes/` は URL とページ組み立てに専念する。`css()` / `*.styles.ts` は置かない
+- ページ UI とスタイルは `features/<name>/components/`（隣接 `*.styles.ts`）
+- `features/` はビジネスロジックと UI を持ち、ルーティング定義に依存しない
+- 外部からの import は必ず `index.ts` 経由にする
+- サーバー状態は TanStack Query、クライアント UI 状態は Jotai
+
+## 4. API 層
+
+- HTTP クライアントは `src/lib/api/axiosClient.ts` を使う
+- 機能固有のエンドポイントは `features/<name>/api/`
+- エラーメッセージ変換は `src/lib/api/extractApiErrorMessage.ts`
+- `VITE_API_BASE_URL` は `react-client/envs/.env.dev` / `.env.prod` を dotenvx で暗号化して管理する。復号鍵は `react-client/envs/.env.keys`（git 管理外）
+
+## 5. スタイリング（Panda CSS）
+
+- トークン・globalCss・conditions は `src/styles/`、`panda.config.ts` はエンジン設定と配線のみ
+- 使い方は `panda-css.mdc` / `panda-tokens.mdc` / `panda-extraction.mdc` / `panda-css-cva.mdc`
+- 生成物は `pnpm install` または `pnpm exec panda codegen` で作る
+- SCSS / CSS Modules / vanilla-extract は使わない
+
+## 6. 設計原則
+
+1. 機能モジュール化（高凝集・低結合）
+2. プレゼンテーションとロジックの分離
+3. 型安全性（`any` / `unknown` は使わない）
+4. サーバー状態とクライアント状態の責務分離
+5. アクセシビリティ（WAI-ARIA）

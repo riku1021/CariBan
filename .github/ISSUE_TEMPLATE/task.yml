@@ -1,0 +1,110 @@
+name: タスク
+description: 合意済みの実装・調査・改善など、着手単位の作業を起票する
+title: "[Task]: "
+labels:
+  - task
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **タスク**: 内容・範囲が決まり、手を動かす単位のチケット用です。アイデア段階の要望は「機能要望」テンプレを使ってください。
+        不具合の報告は「バグ報告」テンプレを使ってください。
+        **PR との紐づけ**: PR の本文に、この Issue 番号を書いてください。マージで本タスクを完了（Issue を閉じる）する場合は `Closes #123` のようにキーワード付きで。一部のみの場合は `#123` の参照や「関連: #123」で構いません（詳細は `.github/PULL_REQUEST_TEMPLATE.md`）。
+
+  - type: input
+    id: summary
+    attributes:
+      label: タスク概要
+      placeholder: "例: ユーザー一覧APIにページネーションを追加する"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 種別
+      options:
+        - 実装
+        - 調査
+        - リファクタ
+        - テスト
+        - メンテナンス
+        - その他
+    validations:
+      required: true
+
+  - type: dropdown
+    id: target_area
+    attributes:
+      label: 対象領域
+      options:
+        - フロントエンド
+        - バックエンド（Python）
+        - バックエンド（Go）
+        - インフラ
+        - データベース
+        - ドキュメント
+        - その他
+    validations:
+      required: true
+
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景
+      placeholder: |
+        例:
+        一覧件数が増加し、初回表示が遅くなっているため、
+        API と UI の両方でページネーション対応を行う
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: 対応内容
+      placeholder: |
+        例:
+        - API に limit / offset を追加
+        - フロントにページ切り替えUIを追加
+        - テストを追加
+    validations:
+      required: true
+
+  - type: textarea
+    id: done_definition
+    attributes:
+      label: 完了条件
+      placeholder: |
+        例:
+        - API がページネーション対応している
+        - UI でページ切り替えできる
+        - テストが通る
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      options:
+        - 高
+        - 中
+        - 低
+    validations:
+      required: true
+
+  - type: input
+    id: due
+    attributes:
+      label: 希望期限
+      placeholder: "例: 2026-04-05"
+    validations:
+      required: false
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 補足
+    validations:
+      required: false

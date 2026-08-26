@@ -1,0 +1,34 @@
+---
+description: HTTP ハンドラーと Repository アダプターの実装規約
+globs: fastapi-server/src/modules/**/adapters/**/*.py,fastapi-server/src/adapter/**/*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Adapters
+
+## HTTP Handler
+
+- 置き場所: `modules/<context>/adapters/http/handler.py`
+- 責務はリクエスト/レスポンス変換のみ。ビジネス判断は Command/Query に委譲
+- ドメイン例外はハンドラーで握りつぶさない（グローバル例外ハンドラーに任せる）
+- API 入出力は Pydantic `*Model`。application DTO と混ぜない
+- ルーター登録は `@fastapi-server/src/bootstrap/router_registry.py`（`/api` prefix はここで付与）
+
+```python
+# ✅ ハンドラーは usecase を呼び、例外はそのまま伝播
+response = await usecase.execute(dto_request)
+return SampleResponseModel(...)
+```
+
+## Repository 実装
+
+- インターフェースは `modules/<context>/domain/repository.py`
+- 実装は `adapter/repository/<context>/`
+- Domain がインフラ型に依存しないこと
+
+## 参照
+
+- `@fastapi-server/src/modules/sample/adapters/http/handler.py`
+- `@fastapi-server/src/modules/health/adapters/http/handler.py`
+- `@fastapi-server/src/adapter/repository/user/user_repo.py`

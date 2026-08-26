@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 質問・相談
+    url: https://github.com/YOUR_ORG/CariBan/discussions
+    about: 使い方の相談や質問は Discussions を利用してください
+  - name: セキュリティ報告
+    url: https://github.com/YOUR_ORG/CariBan/security/policy
+    about: 脆弱性の報告は公開 Issue ではなくこちらからお願いします

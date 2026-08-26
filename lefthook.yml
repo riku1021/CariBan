@@ -1,0 +1,55 @@
+# 公式ドキュメントのベストプラクティスに沿った設定
+pre-commit:
+  parallel: true
+  jobs:
+    - name: react-client-format-lint
+      root: react-client/
+      glob: "react-client/**/*.{ts,tsx,js,jsx,mjs,cjs,json,css,yml,yaml}"
+      run: pnpm fix
+      stage_fixed: true
+      description: "Format and lint react-client (Biome)"
+
+    - name: react-client-typecheck
+      root: react-client/
+      glob: "react-client/**/*.{ts,tsx,js,jsx,mjs,cjs}"
+      run: pnpm run typecheck
+      description: "Type check react-client using pnpm"
+
+    - name: fastapi-server-format
+      root: fastapi-server/
+      glob: "**/*.py"
+      run: uv run ruff format src/ tests/
+      stage_fixed: true
+      description: "Format fastapi-server using ruff"
+
+    - name: fastapi-server-lint
+      root: fastapi-server/
+      glob: "**/*.py"
+      run: uv run ruff check --fix src/ tests/
+      stage_fixed: true
+      description: "Lint fastapi-server using ruff"
+
+    - name: fastapi-server-typecheck
+      root: fastapi-server/
+      glob: "**/*.py"
+      run: uv run mypy src/ tests/
+      description: "Type check fastapi-server using mypy"
+
+    - name: fastapi-server-import-lint
+      root: fastapi-server/
+      glob: "**/*.py"
+      run: uv run lint-imports
+      description: "Check import layers (Pragmatic Clean Architecture)"
+
+    - name: go-server-fmt
+      root: go-server/
+      glob: "**/*.go"
+      run: gofmt -w .
+      stage_fixed: true
+      description: "Format go-server code using gofmt"
+
+    - name: go-server-vet
+      root: go-server/
+      glob: "**/*.go"
+      run: go vet ./...
+      description: "Vet go-server code"

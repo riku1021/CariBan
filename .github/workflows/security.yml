@@ -1,0 +1,104 @@
+# =============================================================================
+# セキュリティスキャン ワークフロー
+# =============================================================================
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  schedule:
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: "3.13.12"
+
+jobs:
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fastapi-server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.11.8"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --group security
+
+      - name: Run pip-audit
+        run: uv run pip-audit
+        continue-on-error: true
+
+  code-scan:
+    name: Code Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fastapi-server
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.11.8"
+
+      - name: Set up Python
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: uv sync --group security
+
+      - name: Run bandit
+        run: uv run bandit -r src/ -c pyproject.toml
+        continue-on-error: true
+
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  security-summary:
+    name: Security Summary
+    needs: [dependency-scan, code-scan, secret-scan]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check security scan results
+        run: |
+          echo "=== Security Scan Summary ==="
+          echo "Dependency Scan: ${{ needs.dependency-scan.result }}"
+          echo "Code Scan: ${{ needs.code-scan.result }}"
+          echo "Secret Scan: ${{ needs.secret-scan.result }}"
+          echo "Security scan completed."

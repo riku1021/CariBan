@@ -1,0 +1,26 @@
+// https://docs.renovatebot.com/config-overview/
+// GitHub: owner/repo は公開リモートに合わせて local> のパスを変更する。
+
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":separateMultipleMajorReleases",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/base.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/readme-badges.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/react-client/dashboard.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/react-client/update-rules.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/fastapi-server/dashboard.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/fastapi-server/update-rules.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/go-server/dashboard.json5",
+    "local>YOUR_ORG/CariBan//.github/renovate/presets/go-server/update-rules.json5"
+  ],
+  "includePaths": [
+    "react-client/**",
+    "fastapi-server/**",
+    "go-server/**",
+    "README.md",
+    "docker-compose.yml",
+    ".mise.toml"
+  ]
+}

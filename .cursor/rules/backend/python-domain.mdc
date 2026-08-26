@@ -1,0 +1,116 @@
+---
+description: Python ドメイン層（Entity / VO / Aggregate / イベント / エラー）の設計規約
+globs: fastapi-server/src/modules/**/domain/**/*.py,fastapi-server/src/shared/domain/**/*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Domain（Python）
+
+詳細と図解は `@fastapi-server/docs/ARCHITECTURE.md`、避けるべきパターンは `@fastapi-server/docs/ANTIPATTERNS.md` を優先。
+
+## 配置
+
+```text
+modules/<context>/domain/
+├── entity.py          # Aggregate Root / 集約内 Entity
+├── vo.py              # 値オブジェクト
+├── repository.py      # Port（ABC）
+├── service.py         # ドメインサービス（必要な場合のみ）
+├── events.py          # ドメインイベント
+├── errors.py          # ドメイン例外
+└── specifications.py  # 仕様オブジェクト（必要な場合）
+
+shared/domain/         # AggregateRoot / DomainEvent / 共通エラー基底
+```
+
+- Domain に FastAPI / SQLAlchemy / HTTP / Pydantic を import しない
+- 他コンテキストの domain 内部を直接 import しない（`public/` 経由）
+
+## Aggregate Root
+
+- `@dataclass class Xxx(AggregateRoot)` で継承
+- 状態変更は **メソッド** で行い、変更後 `self.touch()` する
+- 外部集約は **ID 参照**（オブジェクト参照しない）
+- 集約内 Entity（例: `UserProfile`）は Root 経由でのみ変更
+- 1 トランザクション = 1 集約。集約間はドメインイベントで結果整合
+
+```python
+@dataclass
+class User(AggregateRoot):
+    email: Email
+    name: UserName
+    status: UserStatus = UserStatus.ACTIVE
+
+    @classmethod
+    def create(cls, email: Email, name: UserName, bio: str | None = None) -> "User":
+        user = cls(email=email, name=name, profile=...)
+        user.add_domain_event(UserCreatedEvent(...))
+        return user
+
+    def deactivate(self, reason: str | None = None) -> None:
+        if self.status == UserStatus.INACTIVE:
+            raise UserValidationError("既に非アクティブです")
+        self.status = UserStatus.INACTIVE
+        self.touch()
+        self.add_domain_event(UserDeactivatedEvent(user_id=self.id, reason=reason))
+```
+
+## 値オブジェクト（VO）
+
+- `@dataclass(frozen=True)` で不変
+- バリデーションは `__post_init__` または `@classmethod create`
+- プリミティブ string を Domain 内に残さない（Email / UserName 等）
+- Enum はステータス等の閉じた集合に使う
+
+```python
+@dataclass(frozen=True)
+class Email:
+    value: str
+    def __post_init__(self) -> None:
+        if not self._EMAIL_PATTERN.match(self.value.strip()):
+            raise UserValidationError("無効なメールアドレス形式です")
+```
+
+## ドメインサービス vs エンティティ
+
+| 状況 | 置き場所 |
+|---|---|
+| 単一集約の状態変更 | Entity / Aggregate Root |
+| 値の検証・正規化 | VO |
+| リポジトリが必要（一意性チェック等） | Domain Service |
+| 複数集約にまたがる操作 | Domain Service |
+| トランザクション境界・イベント dispatch | Application（Command） |
+
+## Repository Port
+
+- `domain/repository.py` に ABC で定義
+- CRUD + ドメインに必要な find のみ。複雑な検索は Query 側へ
+- 戻り値は Domain 型（ORM モデル / Row を返さない）
+- 実装は `adapter/repository/<context>/` に置く
+
+## ドメインイベント
+
+- `@dataclass class XxxEvent(DomainEvent)` で定義
+- **Entity 内**で `add_domain_event()` する（Command ではビジネス判断しない）
+- Command が `get_domain_events()` → dispatch → `clear_domain_events()` する
+- イベント名は過去形（`UserCreatedEvent`）
+
+## ドメインエラー
+
+- `shared/domain/errors.py` の `ValidationError` / `NotFoundError` / `ConflictError` を継承
+- コンテキスト固有は `errors.py` に定義（例: `DuplicateEmailError`）
+- HTTP ステータス変換は Adapter 層（グローバル例外ハンドラー）の責務
+
+## 禁止（アンチパターン）
+
+- 貧血症ドメイン（Entity が dataclass だけでロジックが Service に集中）
+- Handler / Command でビジネスルールを判断
+- VO を素の `str` のまま使う
+- 大きすぎる集約（外部 Entity を丸ごと nest しない）
+- Repository に複雑なクエリロジックを詰め込む
+
+## 参照
+
+- `@fastapi-server/src/modules/user/domain/`
+- `@fastapi-server/src/shared/domain/aggregate_root.py`

@@ -1,0 +1,39 @@
+---
+description: Go CQRS（Command / Query）の実装パターン
+globs: go-server/internal/modules/**/application/**/*.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# CQRS パターン（Go）
+
+書き込みは Command、読み取りは Query に分離する。
+
+| 種類 | 役割 | 例 |
+|---|---|---|
+| Command | 状態変更・副作用 | `CreateUserCommand`, `UpdateUserProfileCommand` |
+| Query | 参照のみ | `GetUserQuery`, `ListSamplesQuery` |
+
+## 配置
+
+```text
+internal/modules/<context>/application/
+├── commands/
+├── queries/
+└── dto.go
+```
+
+## ルール
+
+- Handler → Command/Query → Domain / Repository Port
+- `NewXxxCommand(...)` / `NewXxxQuery(...)` で依存を注入し、`Execute(ctx, ...)` で実行
+- Command は集約のメソッドを呼び、必要なら `dispatcher.DispatchAll` でドメインイベントを発行
+- Query は読み取り専用。副作用を入れない
+- HTTP の request/response struct と `application` DTO は変換境界を明確にする
+- 一覧は `limit` / `offset` を明示
+
+## 参照
+
+- `@go-server/internal/modules/user/application/commands/create_user.go`
+- `@go-server/internal/modules/sample/application/queries/list_samples.go`
+- `@go-server/docs/ARCHITECTURE.md`

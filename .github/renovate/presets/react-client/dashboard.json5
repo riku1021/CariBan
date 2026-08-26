@@ -1,0 +1,16 @@
+{
+  "description": "Renovate react-client dashboard layer: react-client 配下更新の Dashboard 分類",
+  "packageRules": [
+    {
+      "description": "Dependency Dashboard: Client(フロントエンド) 用カテゴリ",
+      "matchManagers": ["npm"],
+      "dependencyDashboardCategory": "[Client] Frontend (npm)"
+    },
+    {
+      "description": "Dependency Dashboard: Client の Dockerfile 更新を分類",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["react-client/**"],
+      "dependencyDashboardCategory": "[Client] Frontend (npm)"
+    }
+  ]
+}

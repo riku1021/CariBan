@@ -1,0 +1,11 @@
+tmp/
+bin/
+vendor/
+*.exe
+*.test
+*.out
+coverage.html
+.env
+.env.keys
+envs/.env
+envs/.env.keys

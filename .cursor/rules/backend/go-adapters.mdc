@@ -1,0 +1,37 @@
+---
+description: Go HTTP ハンドラーと Repository アダプターの実装規約
+globs: go-server/internal/modules/**/adapters/**/*.go,go-server/internal/adapter/**/*.go,go-server/internal/shared/http/**/*.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Adapters（Go）
+
+## HTTP Handler
+
+- 置き場所: `internal/modules/<context>/adapters/http/handler.go`
+- パッケージ名は `xxxhttp`（例: `userhttp`, `healthhttp`）
+- 責務はリクエスト/レスポンス変換のみ。ビジネス判断は Command/Query に委譲
+- `Register(mux *http.ServeMux)` でルートを登録（Go 1.22+ の method+path パターン）
+- JSON 入出力は handler 内の非公開 struct。application DTO と混ぜない
+- エラーは `httpx.HandleError` に委譲（ドメインエラー → HTTP ステータス）
+
+```go
+func (h *Handler) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /health", h.HealthCheck)
+	mux.HandleFunc("POST /api/users", h.Create)
+}
+```
+
+## Repository 実装
+
+- インターフェース（Port）は `internal/modules/<context>/domain/repository.go`
+- 実装は `internal/adapter/repository/<context>/`
+- Domain が `pgx` やメモリ実装の具象型に依存しないこと
+
+## 参照
+
+- `@go-server/internal/modules/user/adapters/http/handler.go`
+- `@go-server/internal/modules/health/adapters/http/handler.go`
+- `@go-server/internal/adapter/repository/user/memory.go`
+- `@go-server/internal/shared/http/json.go`

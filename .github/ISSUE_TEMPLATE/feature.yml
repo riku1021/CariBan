@@ -1,0 +1,36 @@
+name: 機能要望
+description: 未合意のアイデア・要望を提案する（着手単位のチケットは「タスク」）
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **機能要望**: こうなってほしい・検討したいこと。合意後の実装作業は「タスク」テンプレを使ってください。
+        やりたいこと・背景が分かると検討しやすくなります。
+        **PR との紐づけ**: 実装 PR を出すときは、本文で本 Issue を参照してください（マージで要望を完了してよい場合は `Closes #123`、続きがある場合は `#123` や「関連: #123」など）。詳細は `.github/PULL_REQUEST_TEMPLATE.md` を参照してください。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 解決したい課題・背景
+      description: 分かれば記載。
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案内容
+      description: 望む動作や追加したいものを具体的に。
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案・検討したこと
+      description: 他に考えた方法があれば。
+    validations:
+      required: false

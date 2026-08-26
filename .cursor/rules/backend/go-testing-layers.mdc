@@ -1,0 +1,36 @@
+---
+description: Go ドメイン・共有層のレイヤ別テスト規約
+globs: go-server/internal/modules/**/domain/**/*_test.go,go-server/internal/shared/**/*_test.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Testing Layers（Go）
+
+## Domain
+
+- VO / Entity / Aggregate の不変条件とエラーを直接検証
+- `net/http` や DB に依存しない
+- パッケージは `domain_test`（外部テスト）でも同梱 `domain` でも可。公開 API の振る舞いを優先
+
+```go
+email, err := domain.NewEmail("User@Example.com")
+if err != nil {
+	t.Fatalf("unexpected error: %v", err)
+}
+```
+
+## Shared / Application
+
+- `shared/http` の JSON / エラー変換は単体で確認
+- Command/Query は Repository Port を差し替えて副作用境界を検証
+
+## ルール
+
+- レイヤをまたいだ巨大テストより、層ごとの薄いテストを優先
+- アンチパターン回避は `@go-server/docs/ANTIPATTERNS.md` を参照
+
+## 参照
+
+- `@go-server/internal/modules/user/domain/vo_test.go`
+- `@go-server/internal/shared/http/json_test.go`

@@ -1,0 +1,35 @@
+{
+  "description": "README の shields.io バッジを package バージョンと同期（ルート README.md）",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Sync README TypeScript badge with typescript package version",
+      "managerFilePatterns": ["/^README\\.md$/"],
+      "matchStrings": [
+        "img\\.shields\\.io/badge/TypeScript-(?<currentValue>.+?)-blue\\.svg"
+      ],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "typescript"
+    },
+    {
+      "customType": "regex",
+      "description": "Sync README React badge with react package version",
+      "managerFilePatterns": ["/^README\\.md$/"],
+      "matchStrings": [
+        "img\\.shields\\.io/badge/React-(?<currentValue>.+?)-blue\\.svg"
+      ],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "react"
+    },
+    {
+      "customType": "regex",
+      "description": "Sync README Vite badge with vite package version",
+      "managerFilePatterns": ["/^README\\.md$/"],
+      "matchStrings": [
+        "img\\.shields\\.io/badge/Vite-(?<currentValue>.+?)-purple\\.svg"
+      ],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "vite"
+    }
+  ]
+}

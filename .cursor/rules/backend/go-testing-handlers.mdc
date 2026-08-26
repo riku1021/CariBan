@@ -1,0 +1,36 @@
+---
+description: Go HTTP ハンドラーのテスト規約
+globs: go-server/internal/modules/**/adapters/**/*_test.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Testing Handlers（Go）
+
+## 検証すること
+
+- 成功時の HTTP ステータス（200 / 201 など）
+- レスポンス JSON の必須フィールド
+- バリデーション / 重複などのエラー契約
+- `httptest` + 実際の `Register(mux)` 経路で通す
+
+```go
+mux := newUserMux()
+req := httptest.NewRequest(http.MethodPost, "/api/users", body)
+rec := httptest.NewRecorder()
+mux.ServeHTTP(rec, req)
+if rec.Code != http.StatusCreated {
+	t.Fatalf("status = %d", rec.Code)
+}
+```
+
+## ルール
+
+- ヘルパー（例: `newUserMux`）で in-memory 配線を共有する
+- ハンドラーテストでドメイン内部の細部に過度に踏み込まない
+- エラー変換は `httpx.HandleError` の契約として確認してよい
+
+## 参照
+
+- `@go-server/internal/modules/user/adapters/http/handler_test.go`
+- `@go-server/internal/modules/health/adapters/http/handler_test.go`

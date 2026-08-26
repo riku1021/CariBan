@@ -1,0 +1,30 @@
+---
+description: サーバー側 pytest の全体方針
+globs: fastapi-server/tests/**/*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Testing（Backend）
+
+## ツール
+
+- `pytest` / `httpx.AsyncClient` / `TestClient`
+- 共通フィクスチャ: `@fastapi-server/tests/conftest.py`（`client`, `async_client`）
+
+## 方針
+
+- テストファイル名は `test_*.py`
+- クラスでグループ化し、テスト名は振る舞いを表す日本語 docstring 可
+- 外部 I/O が不要な domain は純関数的に単体テストする
+- HTTP はステータスコードとレスポンス shape を検証する
+- `any` / 過度なモック乱用を避け、境界（Repository Port）で差し替える
+
+```sh
+cd fastapi-server && uv run pytest
+```
+
+## 参照タイミング
+
+- ハンドラー: `python-testing-handlers.mdc`
+- ドメイン / レイヤ: `python-testing-layers.mdc`

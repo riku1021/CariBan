@@ -1,0 +1,75 @@
+# Python 3.13.x 系は fastapi-server/.python-version / fastapi-server/pyproject.toml requires-python と揃える。
+# Go 1.24.x は go-server/go.mod と揃える。
+# mise install のあと、uv が同じ Python を使うように: mise sync python --uv
+# https://mise.jdx.dev/cli/sync/python.html#uv
+[settings]
+experimental = true
+
+[tools]
+python = "3.13.12"
+node = "24.14.1"
+pnpm = "10.33.0"
+uv = "0.11.8"
+dotenvx = "2.21.0"
+go = "1.24.1"
+
+[tasks.install-deps]
+description = "react-client / fastapi-server / go-server の依存インストール相当"
+run = '''
+set -eu
+cd "$MISE_PROJECT_ROOT"
+mise sync python --uv
+cd "$MISE_PROJECT_ROOT/react-client"
+pnpm install
+cd "$MISE_PROJECT_ROOT/fastapi-server"
+uv sync
+cd "$MISE_PROJECT_ROOT/go-server"
+go mod download
+'''
+
+[tasks."env:encrypt"]
+description = "fastapi-server / go-server の .env.dev / .env.prod を暗号化"
+run = '''
+set -eu
+cd "$MISE_PROJECT_ROOT/react-client"
+for svc in fastapi-server go-server; do
+  for f in .env.dev .env.prod; do
+    pnpm exec dotenvx encrypt -f "../$svc/envs/$f" -fk "../$svc/envs/.env.keys" --no-native --no-armor
+  done
+done
+'''
+
+[tasks."compose:dev"]
+description = "FastAPI dev（dotenvx 鍵を Compose に渡して起動）"
+run = 'docker compose --env-file fastapi-server/envs/.env.keys --profile dev up --build'
+
+[tasks."compose:prod"]
+description = "FastAPI prod"
+run = 'docker compose --env-file fastapi-server/envs/.env.keys --profile prod up --build'
+
+[tasks."compose:go-dev"]
+description = "Go dev"
+run = 'docker compose --env-file go-server/envs/.env.keys --profile go-dev up --build'
+
+[tasks."compose:go-prod"]
+description = "Go prod"
+run = 'docker compose --env-file go-server/envs/.env.keys --profile go-prod up --build'
+
+[tasks."fastapi-server:dev"]
+description = "FastAPI ローカル（Docker なし）"
+run = '''
+cd "$MISE_PROJECT_ROOT/fastapi-server"
+mise exec -- dotenvx run -f envs/.env.dev -fk envs/.env.keys --no-native -- \
+  sh -c 'ENV=dev uv run alembic upgrade head && ENV=dev uv run uvicorn src.main:app --reload --port 8000 --no-access-log'
+'''
+
+[tasks."go:dev"]
+description = "Go ローカル（Docker なし）"
+run = '''
+cd "$MISE_PROJECT_ROOT/go-server"
+mise exec -- dotenvx run -f envs/.env.dev -fk envs/.env.keys --no-native -- \
+  sh -c 'go run ./cmd/migrate && go run ./cmd/api'
+'''
+
+[hooks]
+postinstall = { task = "install-deps" }

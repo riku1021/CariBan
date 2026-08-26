@@ -1,0 +1,100 @@
+{
+  "description": "Renovate react-client update layer: react-client 配下（npm/dockerfile）の branch戦略・更新ルール",
+  "packageRules": [
+    {
+      "description": "branch分離: react-client npm 更新は react-client-npm-* ブランチへ",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["react-client/**"],
+      "additionalBranchPrefix": "react-client-npm-",
+      "rangeStrategy": "auto"
+    },
+    {
+      "description": "branch分離: react-client dockerfile 更新は react-client-docker-* ブランチへ",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["react-client/**"],
+      "additionalBranchPrefix": "react-client-docker-"
+    },
+    {
+      "description": "React + react-spring（peer 確認のため手動マージ推奨）",
+      "groupName": "react-core",
+      "matchManagers": ["npm"],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+        "@react-spring/web"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "TanStack Router / Query 系をまとめる",
+      "groupName": "tanstack",
+      "matchManagers": ["npm"],
+      "matchPackageNames": [
+        "@tanstack/react-router",
+        "@tanstack/router-plugin",
+        "@tanstack/react-router-devtools",
+        "@tanstack/react-query",
+        "@tanstack/react-query-devtools",
+        "jotai-tanstack-query"
+      ]
+    },
+    {
+      "description": "Panda CSS をまとめる",
+      "groupName": "panda-css",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["@pandacss/dev"],
+      "automerge": false
+    },
+    {
+      "description": "Biome（dev かつ minor/patch のみ自動マージ）",
+      "groupName": "lint-formatting",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "minimumReleaseAge": "14 days",
+      "matchPackageNames": ["@biomejs/biome"],
+      "automerge": true
+    },
+    {
+      "description": "TypeScript",
+      "groupName": "typescript",
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchPackageNames": ["typescript"],
+      "automerge": false
+    },
+    {
+      "description": "Vite + @vitejs/plugin-react-swc",
+      "groupName": "vite-toolchain",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["vite", "@vitejs/plugin-react-swc", "vite-plugin-svgr"],
+      "automerge": false
+    },
+    {
+      "description": "dotenvx CLI",
+      "groupName": "dotenvx",
+      "matchManagers": ["npm"],
+      "matchPackageNames": ["@dotenvx/dotenvx"],
+      "automerge": false
+    },
+    {
+      "description": "ツールチェーン major はダッシュボード承認後に PR",
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom",
+        "typescript",
+        "@biomejs/biome",
+        "vite",
+        "@vitejs/plugin-react-swc",
+        "@pandacss/dev"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}

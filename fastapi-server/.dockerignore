@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# テスト
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# 開発ツール
+.mypy_cache/
+.ruff_cache/
+.vscode/
+.cursor/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# 環境変数（鍵・平文のみ除外。暗号化 envs/.env.dev / .env.prod はイメージに含める）
+.env
+.env.local
+.env.keys
+envs/.env
+envs/.env.keys
+
+# ドキュメント
+*.md
+!README.md
+
+# CI/CD
+.github/
+
+# その他
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Docker関連
+Dockerfile*
+docker-compose*.yml
+.dockerignore

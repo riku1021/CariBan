@@ -1,0 +1,17 @@
+{
+  "description": "Renovate go-server dashboard layer: go-server 配下更新の Dashboard 分類",
+  "packageRules": [
+    {
+      "description": "Dependency Dashboard: Go API 用カテゴリ",
+      "matchManagers": ["gomod"],
+      "matchFileNames": ["go-server/**"],
+      "dependencyDashboardCategory": "[Go] API (Go modules)"
+    },
+    {
+      "description": "Dependency Dashboard: Go の Dockerfile 更新を分類",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["go-server/**"],
+      "dependencyDashboardCategory": "[Go] API (Go modules)"
+    }
+  ]
+}

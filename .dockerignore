@@ -1,0 +1,41 @@
+# 依存関係
+node_modules
+.pnpm-store
+
+# ビルド成果物
+dist
+build
+
+# バージョン管理
+.git
+.gitignore
+
+# 環境設定
+.env
+.env.*
+!.env.example
+
+# エディタ設定
+.idea
+.vscode
+.cursor
+*.swp
+*.swo
+
+# システムファイル
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# テスト
+coverage
+.nyc_output
+
+# その他
+*.md
+LICENSE

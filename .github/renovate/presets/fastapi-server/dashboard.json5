@@ -1,0 +1,23 @@
+{
+  "description": "Renovate fastapi-server dashboard layer: fastapi-server 配下更新の Dashboard 分類",
+  "packageRules": [
+    {
+      "description": "Dependency Dashboard: Server(API) 用カテゴリ",
+      "matchManagers": ["pep621"],
+      "matchFileNames": ["fastapi-server/pyproject.toml"],
+      "dependencyDashboardCategory": "[Server] API (Python/uv)"
+    },
+    {
+      "description": "Dependency Dashboard: Server の pyenv 更新を分類",
+      "matchManagers": ["pyenv"],
+      "matchFileNames": ["fastapi-server/**"],
+      "dependencyDashboardCategory": "[Server] API (Python/uv)"
+    },
+    {
+      "description": "Dependency Dashboard: Server の Dockerfile 更新を分類",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["fastapi-server/**"],
+      "dependencyDashboardCategory": "[Server] API (Python/uv)"
+    }
+  ]
+}

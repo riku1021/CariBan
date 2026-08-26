@@ -1,0 +1,63 @@
+# ====================================================
+# 共通設定
+# ====================================================
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# エディタ設定
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 環境設定
+.env
+.env.*
+.env.keys
+**/.env.keys
+# テンプレートとしてコミットする env ファイル（dotenvx で暗号化済みでも可）
+!**/envs/.env.example
+!**/envs/.env.dev
+!**/envs/.env.prod
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.import_linter_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+dist/
+dist-ssr
+
+# Go
+bin/
+tmp/
+vendor/
+*.test
+*.out
+
+# Panda CSS 生成物
+styled-system/
+styled-system-studio/
+react-client/src/styled-system/
+
+# ローカル参照用（upstream: multica-ai/andrej-karpathy-skills）
+andrej-karpathy-skills/

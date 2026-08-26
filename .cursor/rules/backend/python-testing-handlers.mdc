@@ -1,0 +1,34 @@
+---
+description: FastAPI HTTP ハンドラーのテスト規約
+globs: fastapi-server/tests/test_*_handler.py,fastapi-server/tests/test_*handler*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Testing Handlers
+
+## 検証すること
+
+- 成功時の HTTP ステータス（200 / 201 など）
+- レスポンス JSON の必須フィールド
+- 未実装は 501 など契約どおりか（雛形段階）
+- 非同期経路が必要なら `@pytest.mark.asyncio` + `async_client`
+
+```python
+def test_health_check_returns_healthy_status(self, client: TestClient) -> None:
+    response = client.get("/health")
+    data = response.json()
+    assert response.status_code == 200
+    assert data["status"] == "healthy"
+```
+
+## ルール
+
+- ハンドラーテストでドメイン内部実装の細部に踏み込まない
+- 例外 → HTTP 変換はグローバルハンドラーの契約として別途確認してよい
+- フィクスチャは `conftest.py` に集約
+
+## 参照
+
+- `@fastapi-server/tests/test_health_handler.py`
+- `@fastapi-server/tests/test_sample_handler.py`

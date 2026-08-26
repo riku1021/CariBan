@@ -1,0 +1,72 @@
+name: Dependency CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: dependency-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint-build:
+    name: lint-build
+    runs-on: ubuntu-latest
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        github.actor == 'renovate[bot]' ||
+        startsWith(github.event.pull_request.head.ref, 'renovate/')
+      }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup mise (Node/pnpm from .mise.toml)
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+        with:
+          install: true
+          github_token: ${{ github.token }}
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        working-directory: react-client
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('.mise.toml', 'react-client/package.json', 'react-client/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Fetch dependencies (react-client)
+        working-directory: react-client
+        run: pnpm fetch --frozen-lockfile
+
+      - name: Install dependencies (react-client, offline)
+        working-directory: react-client
+        run: pnpm install --offline --frozen-lockfile
+
+      - name: Lint (react-client)
+        working-directory: react-client
+        run: pnpm run lint:ci
+
+      - name: Typecheck (react-client)
+        working-directory: react-client
+        run: pnpm typecheck
+
+      - name: Build (react-client)
+        working-directory: react-client
+        env:
+          VITE_API_BASE_URL: http://localhost
+          DOTENV_PRIVATE_KEY_PROD: ${{ secrets.DOTENV_PRIVATE_KEY_PROD }}
+        run: pnpm build

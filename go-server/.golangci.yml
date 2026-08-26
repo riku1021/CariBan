@@ -1,0 +1,11 @@
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+run:
+  timeout: 3m
+  tests: true

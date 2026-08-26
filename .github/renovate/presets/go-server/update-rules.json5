@@ -1,0 +1,41 @@
+{
+  "description": "Renovate go-server update layer: go-server 配下（gomod/dockerfile）の branch戦略・更新ルール",
+  "packageRules": [
+    {
+      "description": "branch分離: go-server gomod 更新は go-gomod-* ブランチへ",
+      "matchManagers": ["gomod"],
+      "matchFileNames": ["go-server/**"],
+      "additionalBranchPrefix": "go-gomod-"
+    },
+    {
+      "description": "branch分離: go-server dockerfile 更新は go-docker-* ブランチへ",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": ["go-server/**"],
+      "additionalBranchPrefix": "go-docker-"
+    },
+    {
+      "description": "go-server: ランタイム主要依存を同一PRにまとめる",
+      "groupName": "go-server-runtime",
+      "matchManagers": ["gomod"],
+      "matchFileNames": ["go-server/**"],
+      "matchPackageNames": [
+        "github.com/jackc/pgx/v5",
+        "github.com/joho/godotenv",
+        "github.com/pressly/goose/v3",
+        "github.com/google/uuid"
+      ],
+      "automerge": false
+    },
+    {
+      "description": "go-server: 主要依存 major はダッシュボード承認後に PR",
+      "matchManagers": ["gomod"],
+      "matchFileNames": ["go-server/**"],
+      "matchUpdateTypes": ["major"],
+      "matchPackageNames": [
+        "github.com/jackc/pgx/v5",
+        "github.com/pressly/goose/v3"
+      ],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}

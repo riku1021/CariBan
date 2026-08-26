@@ -1,0 +1,36 @@
+---
+description: 常時適用。日本語、スタック固定、UI無断変更禁止、ルール参照表
+alwaysApply: true
+---
+まず、このファイルを参照したら、参照ファイル名を発言すること
+
+日本語で回答する。実装の振る舞い（前提の明示、最小 diff、依頼外の追加禁止）は `agent-behavior.mdc` に従う。
+
+## 制約
+
+- 重要な判断・予期せぬ問題は報告し、承認を得てから進める
+- **UI/UX（レイアウト、色、フォント、間隔）の無断変更は禁止。** 必要な場合は理由を示して承認を取る
+- **技術スタックのバージョン（API / フレームワーク / ライブラリ）を勝手に変えない。** 変更時は理由を示して承認を取る
+- フロントの Lint は `cd react-client && pnpm fix`
+
+## ルールの置き場所
+
+- `.cursor/rules/**/*.mdc`（`frontend/` / `backend/` / `react/` / `typescript/` / `shared/`）
+- 実装・レビュー時の行動指針: `shared/agent-behavior.mdc`（スキル版は `.cursor/skills/agent-behavior/SKILL.md`）
+- ルールは `.mdc`（YAML frontmatter 付き）。プレーン `.md` は Project Rules として無視される
+
+常時適用は本ファイルと `agent-behavior.mdc` のみ。ほかは対象ファイルの glob で付く。
+
+## ルール参照表
+
+- frontend: **structure.mdc**（構成・責務）、**uiux.mdc** / **panda-*.mdc**（スタイル・トークン・静的抽出・`css`/`cva`）
+- backend（Python: `fastapi-server/` / Go: `go-server/`）
+  - **python-backend.mdc** / **go-backend.mdc**: レイヤ・modules
+  - **python-domain.mdc** / **go-domain.mdc**: Entity / VO / Aggregate / イベント / エラー
+  - **python-adapters.mdc** / **go-adapters.mdc**: HTTP Handler / Repository
+  - **python-cqrs-pattern.mdc** / **go-cqrs-pattern.mdc**: Command / Query
+  - **python-di.mdc** / **go-di.mdc**: DI / bootstrap
+  - **python-testing*.mdc** / **go-testing*.mdc**: テスト全体 / ハンドラー / レイヤ別
+- react: **react-frontend.mdc**（features / Query / Jotai）、**react-forms.mdc**
+- typescript: **typescript-general.mdc**、**typescript-testing.mdc**
+- shared: **agent-behavior.mdc**、**module-sharing.mdc**（features / modules の公開境界）

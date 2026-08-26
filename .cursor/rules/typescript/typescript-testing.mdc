@@ -1,0 +1,23 @@
+---
+description: クライアント側のテスト・型チェック方針
+globs: react-client/**/*.{test,spec}.{ts,tsx},react-client/**/__tests__/**/*
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# TypeScript Testing
+
+現状クライアントはテストファイルが少ない。追加する場合の方針:
+
+- コンポーネントは振る舞い（表示・操作結果）を検証する
+- Query hooks は成功 / 失敗 / pending を境界で確認する
+- スナップショット乱用や実装詳細への結合を避ける
+- 型安全性は `pnpm typecheck` で担保する
+
+```sh
+cd react-client
+pnpm typecheck
+pnpm lint
+```
+
+サーバー側テスト規約は `backend/python-testing*.mdc` を参照。

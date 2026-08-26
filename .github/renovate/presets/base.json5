@@ -1,0 +1,13 @@
+{
+  "description": "Renovate base: リポジトリ全体に共通の実行ポリシー",
+  "dependencyDashboard": true,
+  "minimumReleaseAge": "3 days",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
+  "timezone": "Asia/Tokyo",
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 7,
+  "schedule": ["* 21-23 * * 1"]
+}

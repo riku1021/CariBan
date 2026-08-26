@@ -1,0 +1,159 @@
+# CI: react-client lint/build と fastapi-server / go-server テスト
+# Python は actions/setup-python ではなく uv が取得・固定（ルート .mise.toml の uv 版と揃える）
+# シークレット不要でも fork PR が通るよう、react-client は VITE_API_BASE_URL をフォールバックする。
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.13.12"
+
+jobs:
+  fastapi-server-test-and-lint:
+    name: FastAPI server test and lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fastapi-server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          # 新しい CPython パッチ（例: 3.14.x）は古い uv の埋め込み一覧に無く `uv python install` が失敗する。定期的に上げる。
+          version: "0.11.8"
+
+      - name: Set up Python (uv)
+        run: uv python install "${PYTHON_VERSION}"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check formatting
+        run: uv run ruff format --check src/ tests/
+
+      - name: Lint
+        run: uv run ruff check src/ tests/
+
+      - name: Type check
+        run: uv run mypy src/
+
+      - name: Run tests
+        run: uv run pytest tests/ -v --tb=short
+        env:
+          HOST: "0.0.0.0"
+          PORT: "8000"
+
+      - name: Run Import Linter
+        run: PYTHONPATH=. uv run lint-imports
+
+  react-client-lint-build:
+    name: React client lint and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup mise (Node/pnpm from .mise.toml)
+        uses: jdx/mise-action@1648a7812b9aeae629881980618f079932869151 # v4
+        with:
+          install: true
+          github_token: ${{ github.token }}
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        working-directory: react-client
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('.mise.toml', 'react-client/package.json', 'react-client/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Fetch dependencies (react-client)
+        working-directory: react-client
+        run: pnpm fetch --frozen-lockfile
+
+      - name: Install dependencies (react-client, offline)
+        working-directory: react-client
+        run: pnpm install --offline --frozen-lockfile
+
+      - name: Lint (react-client)
+        working-directory: react-client
+        run: pnpm run lint:ci
+
+      - name: Typecheck (react-client)
+        working-directory: react-client
+        run: pnpm typecheck
+
+      - name: Build (react-client)
+        working-directory: react-client
+        env:
+          VITE_API_BASE_URL: http://localhost
+          DOTENV_PRIVATE_KEY_PROD: ${{ secrets.DOTENV_PRIVATE_KEY_PROD }}
+        run: pnpm build
+
+  go-server-test-and-lint:
+    name: Go server test and lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: go-server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go-server/go.mod
+          cache-dependency-path: go-server/go.sum
+
+      - name: Check formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.64.8
+          working-directory: go-server
+
+      - name: Run tests
+        run: go test ./...
+
+  ci-success:
+    name: CI Success
+    needs: [fastapi-server-test-and-lint, react-client-lint-build, go-server-test-and-lint]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ needs.fastapi-server-test-and-lint.result }}" != "success" ]] || \
+             [[ "${{ needs.react-client-lint-build.result }}" != "success" ]] || \
+             [[ "${{ needs.go-server-test-and-lint.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
+          echo "All CI checks passed!"

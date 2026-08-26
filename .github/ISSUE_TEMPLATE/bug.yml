@@ -1,0 +1,79 @@
+name: バグ報告
+description: 不具合・期待と異なる動作を報告する
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **バグ報告**: 壊れている・期待と違う動きの報告用です。要望は「機能要望」、作業チケットは「タスク」を使ってください。
+        分かる範囲で記載してください。急ぎのときは概要だけでも構いません。
+        **PR との紐づけ**: 修正を出す PR では、本文に `Fixes #123`（例）のようにこの Issue と紐づけてください。マージで自動クローズできます。詳細は `.github/PULL_REQUEST_TEMPLATE.md` を参照してください。
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 概要
+      description: 何が起きたか、簡潔に記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待した動作
+      description: 分かれば記載。
+    validations:
+      required: false
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+      description: 分かれば記載。
+    validations:
+      required: false
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 再現手順
+      description: 可能なら手順を番号付きで。
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: ブラウザ（該当する場合）
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Microsoft Edge
+        - その他 / 該当なし
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: 環境・バージョン
+      description: OS、Node / ブランチ、再現したコミットなど分かる範囲で。
+      placeholder: "例: macOS 14, Node 24, main の最新"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ・スタックトレース
+      description: コンソールやターミナルの出力があれば貼り付けてください。
+      render: shell
+    validations:
+      required: false

@@ -1,0 +1,39 @@
+---
+description: CQRS（Command / Query）と CRUD 的エンドポイントの実装パターン
+globs: fastapi-server/src/modules/**/application/**/*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# CQRS パターン
+
+書き込みは Command、読み取りは Query に分離する。
+
+| 種類 | 役割 | 例 |
+|---|---|---|
+| Command | 状態変更・副作用 | `CreateUserCommand`, `UpdateUserProfileCommand` |
+| Query | 参照のみ | `GetUserQuery`, `ListSamplesQuery` |
+
+## 配置
+
+```text
+modules/<context>/application/
+├── commands/
+├── queries/
+├── dto.py
+└── ports.py
+```
+
+## ルール
+
+- Handler → Command/Query → Domain / Repository Port
+- Command は集約のメソッドを呼び、必要ならドメインイベントを発行
+- Query は読み取り専用。副作用を入れない
+- HTTP の Pydantic Model と application DTO は変換境界を明確にする
+- 一覧は `limit` / `offset`（または同等のページング）を明示
+
+## 参照
+
+- `@fastapi-server/src/modules/user/application/commands/create_user.py`
+- `@fastapi-server/src/modules/sample/application/queries/list_samples.py`
+- `@fastapi-server/docs/ARCHITECTURE.md`（CQRS 節）

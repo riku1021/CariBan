@@ -1,0 +1,120 @@
+---
+description: Go ドメイン層（Entity / VO / Aggregate / イベント / エラー）の設計規約
+globs: go-server/internal/modules/**/domain/**/*.go,go-server/internal/shared/domain/**/*.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# Domain（Go）
+
+詳細は `@go-server/docs/ARCHITECTURE.md`、アンチパターンは `@go-server/docs/ANTIPATTERNS.md` を優先。
+
+## 配置
+
+```text
+internal/modules/<context>/domain/
+├── entity.go       # Aggregate Root / 集約内 Entity
+├── vo.go           # 値オブジェクト
+├── repository.go   # Port（interface）
+├── service.go      # ドメインサービス（必要な場合のみ）
+├── events.go       # ドメインイベント
+└── errors.go       # ドメインエラー
+
+internal/shared/domain/   # AggregateRoot / Event / 共通 Error
+```
+
+- Domain に `net/http` / `pgx` / JSON タグ / ORM 型を持ち込まない
+- 他コンテキストの domain 内部を直接 import しない（`public/` 経由）
+
+## Aggregate Root
+
+- `shared.AggregateRoot` を **埋め込み**
+- 生成は `CreateXxx(...)` ファクトリ、DB 復元は `ReconstructXxx(...)`
+- 状態変更後は `Touch()`、必要なら `AddDomainEvent(...)`
+- 外部集約は ID 参照のみ
+
+```go
+type User struct {
+    shared.AggregateRoot
+    Email   Email
+    Name    UserName
+    Status  UserStatus
+    Profile *UserProfile
+}
+
+func CreateUser(email Email, name UserName, bio *string) (*User, error) {
+    user := &User{AggregateRoot: shared.NewAggregateRoot(), Email: email, ...}
+    user.AddDomainEvent(NewUserCreatedEvent(...))
+    return user, nil
+}
+
+func (u *User) Deactivate(reason *string) {
+    u.Status = UserStatusInactive
+    u.Touch()
+    u.AddDomainEvent(NewUserDeactivatedEvent(u.ID, reason, u.UpdatedAt))
+}
+```
+
+## 値オブジェクト（VO）
+
+- 非公開フィールド + コンストラクタ `NewXxx(...) (Xxx, error)`
+- バリデーション失敗は `UserValidationError(...)` 等を返す
+- `String()` / `FullName()` で表示用。外部へは VO を渡し、内部 string を直接使わない
+
+```go
+func NewEmail(value string) (Email, error) {
+    trimmed := strings.TrimSpace(value)
+    if !emailPattern.MatchString(trimmed) {
+        return Email{}, UserValidationError("無効なメールアドレス形式です: " + trimmed)
+    }
+    return Email{value: strings.ToLower(trimmed)}, nil
+}
+```
+
+## ドメインサービス vs エンティティ
+
+| 状況 | 置き場所 |
+|---|---|
+| 単一集約の状態変更 | Entity メソッド |
+| 値の検証 | VO の `NewXxx` |
+| リポジトリが必要（一意性チェック等） | `XxxDomainService` |
+| 複数集約にまたがる操作 | Domain Service |
+| イベント dispatch | Application（Command） |
+
+## Repository Port
+
+- `domain/repository.go` に `interface` で定義
+- 第一引数は `context.Context`
+- 戻り値は `*Entity` / `error`。永続化 DTO は adapter 内に閉じる
+- `FindByID` で not found は `(nil, NotFoundError)` または `(nil, nil)` で契約を統一（既存 module に合わせる）
+
+## ドメインイベント
+
+- `shared/domain.Event` を実装する型を `events.go` に定義
+- 生成は `NewXxxEvent(...)` コンストラクタ
+- Entity 内で `AddDomainEvent`、Command で `DispatchAll` → `ClearDomainEvents`
+
+## ドメインエラー
+
+- `shared/domain/errors.go` の `*shared.Error` と `Kind`（Validation / NotFound / Conflict 等）を使う
+- コンテキスト固有は `errors.go` にヘルパー（例: `DuplicateEmailError(email)`）
+- HTTP 変換は `internal/shared/http` の `HandleError` に委譲
+
+```go
+func UserValidationError(message string) *shared.Error {
+    return shared.NewValidationError("USER_VALIDATION_ERROR", message)
+}
+```
+
+## 禁止（アンチパターン）
+
+- 貧血症ドメイン（`Deactivate(user *User)` を package 関数にする等）
+- Handler で重複チェック・状態判断
+- VO を素の `string` のまま渡す
+- SQL 行型を domain / application に漏らす
+- `json` タグ付き struct を domain に置く
+
+## 参照
+
+- `@go-server/internal/modules/user/domain/`
+- `@go-server/internal/shared/domain/aggregate.go`

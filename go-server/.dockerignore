@@ -1,0 +1,7 @@
+tmp/
+bin/
+.git/
+envs/.env
+envs/.env.keys
+*.test
+*.out

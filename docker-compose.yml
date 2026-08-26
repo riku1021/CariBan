@@ -1,0 +1,418 @@
+# =============================================================================
+# cariban Docker Compose
+#
+# 起動前に復号鍵を Compose に渡す（公式推奨）:
+#   FastAPI dev:  mise run compose:dev
+#   FastAPI prod: mise run compose:prod
+#   Go dev:       mise run compose:go-dev
+#   Go prod:      mise run compose:go-prod
+#
+# 手動: docker compose --env-file fastapi-server/envs/.env.keys --profile dev up --build
+#       docker compose --env-file go-server/envs/.env.keys --profile go-dev up --build
+#
+# リバースプロキシ: nginx-dev / nginx-prod / nginx-go-dev / nginx-go-prod
+#   単一エントリは http://localhost:${NGINX_HTTP_PORT:-80}
+# PostgreSQL（プロファイルなし）: いずれの API と一緒に起動。
+# FastAPI 起動前に `alembic upgrade head`、Go 起動前に `migrate` を実行する。
+# =============================================================================
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: cariban-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+      POSTGRES_DB: ${POSTGRES_DB:-cariban}
+    ports:
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - cariban-pgdata:/var/lib/postgresql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-app} -d ${POSTGRES_DB:-cariban}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - cariban-network
+
+  fastapi-server-dev:
+    profiles:
+      - dev
+    build:
+      context: ./fastapi-server
+      dockerfile: Dockerfile
+      target: runtime-dev
+    container_name: cariban-fastapi-server-dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./fastapi-server/src:/app/src
+      - ./fastapi-server/alembic:/app/alembic
+      - ./fastapi-server/alembic.ini:/app/alembic.ini
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-cariban}
+      - ENV=dev
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - DOTENV_PRIVATE_KEY_DEV=${DOTENV_PRIVATE_KEY_DEV}
+    user: root
+    command:
+      - sh
+      - -c
+      - >-
+        dotenvx run -f envs/.env.dev --no-native --
+        sh -c '        uv run alembic -c /app/alembic.ini upgrade head &&
+        uv run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload --no-access-log'
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+  react-client-dev:
+    profiles:
+      - dev
+    build:
+      context: ./react-client
+      dockerfile: Dockerfile
+      target: development
+    container_name: cariban-react-client-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./react-client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - "pnpm exec panda codegen && pnpm dev"
+    depends_on:
+      fastapi-server-dev:
+        condition: service_healthy
+    networks:
+      - cariban-network
+
+  nginx-dev:
+    profiles:
+      - dev
+    image: nginx:1.30.0-alpine
+    container_name: cariban-nginx-dev
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf/dev:/etc/nginx/conf.d:ro
+    depends_on:
+      fastapi-server-dev:
+        condition: service_healthy
+      react-client-dev:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/health 2>/dev/null | grep -q status || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+  fastapi-server-prod:
+    profiles:
+      - prod
+    build:
+      context: ./fastapi-server
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: cariban-fastapi-server-prod
+    ports:
+      - "8081:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-cariban}
+      - ENV=prod
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - DOTENV_PRIVATE_KEY_PROD=${DOTENV_PRIVATE_KEY_PROD}
+    command:
+      - sh
+      - -c
+      - >-
+        dotenvx run -f envs/.env.prod --no-native --
+        sh -c 'alembic -c /app/alembic.ini upgrade head &&
+        exec gunicorn src.main:app -w 4 -k uvicorn.workers.UvicornWorker -b 0.0.0.0:8000 --timeout 30 --keep-alive 5 --error-logfile -'
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+  react-client-prod:
+    profiles:
+      - prod
+    build:
+      context: ./react-client
+      dockerfile: Dockerfile
+      target: production
+    container_name: cariban-react-client-prod
+    ports:
+      - "4173:4173"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      fastapi-server-prod:
+        condition: service_healthy
+    networks:
+      - cariban-network
+
+  nginx-prod:
+    profiles:
+      - prod
+    image: nginx:1.30.0-alpine
+    container_name: cariban-nginx-prod
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf/prod:/etc/nginx/conf.d:ro
+    depends_on:
+      fastapi-server-prod:
+        condition: service_healthy
+      react-client-prod:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/health 2>/dev/null | grep -q status || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+  go-server-dev:
+    profiles:
+      - go-dev
+    build:
+      context: ./go-server
+      dockerfile: Dockerfile
+      target: runtime-dev
+    container_name: cariban-go-server-dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./go-server:/app
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-cariban}?sslmode=disable
+      - ENV=dev
+      - DOTENV_PRIVATE_KEY_DEV=${DOTENV_PRIVATE_KEY_DEV}
+    command:
+      - sh
+      - -c
+      - >-
+        dotenvx run -f envs/.env.dev --no-native --
+        sh -c 'migrate && air -c /app/.air.toml'
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://127.0.0.1:8000/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - cariban-network
+
+  react-client-go-dev:
+    profiles:
+      - go-dev
+    build:
+      context: ./react-client
+      dockerfile: Dockerfile
+      target: development
+    container_name: cariban-react-client-go-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./react-client:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    stdin_open: true
+    tty: true
+    working_dir: /app
+    command:
+      - sh
+      - -c
+      - "pnpm exec panda codegen && pnpm dev"
+    depends_on:
+      go-server-dev:
+        condition: service_healthy
+    networks:
+      - cariban-network
+
+  nginx-go-dev:
+    profiles:
+      - go-dev
+    image: nginx:1.30.0-alpine
+    container_name: cariban-nginx-go-dev
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf/go-dev:/etc/nginx/conf.d:ro
+    depends_on:
+      go-server-dev:
+        condition: service_healthy
+      react-client-go-dev:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/health 2>/dev/null | grep -q status || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+  go-server-prod:
+    profiles:
+      - go-prod
+    build:
+      context: ./go-server
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: cariban-go-server-prod
+    ports:
+      - "8081:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-cariban}?sslmode=disable
+      - ENV=prod
+      - DOTENV_PRIVATE_KEY_PROD=${DOTENV_PRIVATE_KEY_PROD}
+    command:
+      - sh
+      - -c
+      - >-
+        dotenvx run -f envs/.env.prod --no-native --
+        sh -c '/app/migrate && exec /app/api'
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-qO-",
+          "http://127.0.0.1:8000/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+  react-client-go-prod:
+    profiles:
+      - go-prod
+    build:
+      context: ./react-client
+      dockerfile: Dockerfile
+      target: production
+    container_name: cariban-react-client-go-prod
+    ports:
+      - "4173:4173"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      go-server-prod:
+        condition: service_healthy
+    networks:
+      - cariban-network
+
+  nginx-go-prod:
+    profiles:
+      - go-prod
+    image: nginx:1.30.0-alpine
+    container_name: cariban-nginx-go-prod
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf/go-prod:/etc/nginx/conf.d:ro
+    depends_on:
+      go-server-prod:
+        condition: service_healthy
+      react-client-go-prod:
+        condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1/health 2>/dev/null | grep -q status || exit 1",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - cariban-network
+
+networks:
+  cariban-network:
+    driver: bridge
+
+volumes:
+  cariban-pgdata:
+    driver: local

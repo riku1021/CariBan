@@ -1,0 +1,38 @@
+---
+description: FastAPI Pragmatic Clean Architecture の全体方針（レイヤ・modules 構成）
+globs: fastapi-server/**/*.py
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# バックエンド全体方針
+
+詳細は `@fastapi-server/docs/ARCHITECTURE.md` と `@fastapi-server/docs/ANTIPATTERNS.md` を優先する。
+
+## レイヤ依存
+
+| 層 | 依存先 | 配置例 |
+|---|---|---|
+| adapters（HTTP / Repository 実装） | application, domain | `modules/<ctx>/adapters/`, `adapter/repository/` |
+| application（Command / Query） | domain | `modules/<ctx>/application/` |
+| domain | なし | `modules/<ctx>/domain/` |
+| infrastructure | 技術関心のみ | `infrastructure/`, `shared/` |
+
+- Domain に FastAPI / SQLAlchemy / HTTP を持ち込まない
+- 貧血症ドメインを避ける（状態変更はエンティティ / VO に置く）
+- 新機能は `fastapi-server/src/modules/<context>/` に Vertical Slice で追加し、`bootstrap/router_registry.py` で登録
+- ドメイン詳細は `python-domain.mdc` を参照
+
+## コマンド
+
+```sh
+cd fastapi-server
+uv run pytest
+uv run ruff check src/ tests/
+uv run mypy src/
+uv run lint-imports
+```
+
+## 参照
+
+- 雛形: `@fastapi-server/src/modules/user/`, `@fastapi-server/src/modules/sample/`, `@fastapi-server/src/modules/health/`

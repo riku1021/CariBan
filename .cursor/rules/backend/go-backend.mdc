@@ -1,0 +1,39 @@
+---
+description: Go（go-server）Pragmatic Clean Architecture の全体方針
+globs: go-server/**/*.go
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# バックエンド全体方針（Go）
+
+詳細は `@go-server/docs/ARCHITECTURE.md` と `@go-server/docs/ANTIPATTERNS.md` を優先する。
+
+## レイヤ依存
+
+| 層 | 依存先 | 配置例 |
+|---|---|---|
+| adapters（HTTP / Repository 実装） | application, domain | `internal/modules/<ctx>/adapters/`, `internal/adapter/repository/` |
+| application（Command / Query） | domain | `internal/modules/<ctx>/application/` |
+| domain | なし | `internal/modules/<ctx>/domain/` |
+| infrastructure | 技術関心のみ | `internal/infrastructure/`, `internal/shared/` |
+
+- Domain に `net/http` / `pgx` / JSON タグ付き DTO を持ち込まない
+- 貧血症ドメインを避ける（状態変更は Entity / VO のコンストラクタ・メソッドに置く）
+- 新機能は `go-server/internal/modules/<context>/` に Vertical Slice で追加し、`internal/bootstrap/server.go` で配線・登録
+- HTTP は標準ライブラリ `net/http` + `ServeMux`（フレームワークを勝手に追加しない）
+- ドメイン詳細は `go-domain.mdc` を参照
+
+## コマンド
+
+```sh
+cd go-server
+go test ./...
+gofmt -w .
+go vet ./...
+go run ./cmd/api
+```
+
+## 参照
+
+- 雛形: `@go-server/internal/modules/user/`, `@go-server/internal/modules/sample/`, `@go-server/internal/modules/health/`

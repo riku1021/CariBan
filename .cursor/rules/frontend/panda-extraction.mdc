@@ -1,0 +1,43 @@
+---
+description: Panda CSS の静的抽出と動的スタイル（react-client の ts/tsx）
+globs: react-client/**/*.{ts,tsx}
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# 静的抽出
+
+出典: [Dynamic styling](https://panda-css.com/docs/guides/dynamic-styling)、[Merging Styles](https://panda-css.com/docs/concepts/merging-styles)、[Static CSS](https://panda-css.com/docs/guides/static)。
+
+Panda はビルド時にソースを読んで CSS を出す。実行時の値は抽出できない。迷ったら recipes / CSS 変数 / `data-*` を使う。
+
+## 抽出できる
+
+- 同一ファイルのリテラル・`as const` オブジェクト
+- `css({ color: isOn ? "brand.primary.main" : "text.main" })`（両枝を生成）
+- `css.raw({ ... })`（抽出ヒント。オブジェクトを返す）
+- 組み込みの `_hover` / `md` / `_dark` など
+
+## 抽出できない（やらない）
+
+```ts
+css({ color });                          // state / props の値
+css({ color: colorByType[type] });     // 実行時キー
+css({ color: getColor() });            // 関数結果
+css({ color: tokensFromOtherFile });   // 別ファイルの変数
+```
+
+代わりに `cva` の `variants` にする。本当に実行時値が必要なら:
+
+```ts
+css({ color: "var(--accent)" });
+// style={{ ["--accent"]: token.var(`colors.${key}`) }}
+```
+
+`staticCss` は最終手段。必要な値だけ列挙し、`['*']` や全 breakpoint の総当たりはしない。
+
+## マージ
+
+同じプロパティの上書きは `css(a, b)` または `css(recipe.raw(props), extra)`。`cx` は別クラスを足すだけ（`"group"`、開閉用）。
+
+子孫セレクタ（`& span`）は避け、対象要素に `css()` を付ける。スタイル値は見た目で値が分かる場所に置く。

@@ -1,0 +1,31 @@
+---
+description: React フロントの機能モジュール・状態管理の実装規約
+globs: react-client/src/features/**/*.{ts,tsx},react-client/src/routes/**/*.{ts,tsx},react-client/src/layouts/**/*.{ts,tsx}
+alwaysApply: false
+---
+まず、このファイルを参照したら、このファイル名を発言すること
+
+# React Frontend
+
+詳細なディレクトリ責務は `frontend/structure.mdc`、スタイルは `frontend/uiux.mdc` ほかを優先。
+
+## 配置
+
+- ページ UI: `features/<name>/components/`（隣接 `*.styles.ts`）
+- 公開 API: `features/<name>/index.ts` 経由のみ
+- ルーティング: `routes/` は組み立て専用。`css()` を置かない
+- サーバー状態: TanStack Query（`features/*/hooks`）
+- クライアント UI 状態: Jotai（`atoms/` または feature 内）
+
+## ルール
+
+- 関数コンポーネント + named export
+- `any` / `unknown` 禁止
+- HTTP は `@/lib/api/axiosClient` と `extractApiErrorMessage`
+- UI/UX（色・余白・レイアウト）の無断変更禁止
+
+## 参照
+
+- `@react-client/src/features/home/`
+- `@react-client/src/features/health/`
+- `@react-client/src/routes/__root.tsx`
