@@ -68,9 +68,48 @@ describe("sortDeadlines", () => {
 describe("sortCompanies", () => {
   it("ステージが進んでいる順、同ステージなら最終更新が新しい順にする", () => {
     const companies: CompanyProgress[] = [
-      { id: "1", name: "A", initials: "A", currentStageIndex: 1, lastUpdated: "5/10" },
-      { id: "2", name: "B", initials: "B", currentStageIndex: 3, lastUpdated: "5/01" },
-      { id: "3", name: "C", initials: "C", currentStageIndex: 3, lastUpdated: "5/12" },
+      {
+        id: "1",
+        name: "A",
+        initials: "A",
+        jobTitle: "エンジニア",
+        stages: [
+          { id: "entry", label: "エントリー" },
+          { id: "interview", label: "面接" },
+          { id: "offer", label: "内定" },
+        ],
+        currentStageIndex: 1,
+        lastUpdated: "5/10",
+      },
+      {
+        id: "2",
+        name: "B",
+        initials: "B",
+        jobTitle: "総合職",
+        stages: [
+          { id: "entry", label: "エントリー" },
+          { id: "document", label: "書類" },
+          { id: "webTest", label: "Webテスト" },
+          { id: "interview", label: "面接" },
+          { id: "offer", label: "内定" },
+        ],
+        currentStageIndex: 3,
+        lastUpdated: "5/01",
+      },
+      {
+        id: "3",
+        name: "C",
+        initials: "C",
+        jobTitle: "デザイナー",
+        stages: [
+          { id: "entry", label: "エントリー" },
+          { id: "document", label: "書類" },
+          { id: "interview", label: "面接" },
+          { id: "offer", label: "内定" },
+        ],
+        currentStageIndex: 3,
+        lastUpdated: "5/12",
+      },
     ];
 
     expect(sortCompanies(companies).map((item) => item.id)).toEqual(["3", "2", "1"]);

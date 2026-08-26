@@ -26,6 +26,11 @@ export const SELECTION_STAGES = [
 
 export type SelectionStageId = (typeof SELECTION_STAGES)[number]["id"];
 
+export type SelectionStage = {
+  id: string;
+  label: string;
+};
+
 export type CalendarDay = {
   date: string;
   eventKinds: CalendarEventKind[];
@@ -93,6 +98,8 @@ export type CompanyProgress = {
   id: string;
   name: string;
   initials: string;
+  jobTitle: string;
+  stages: SelectionStage[];
   currentStageIndex: number;
   lastUpdated: string;
 };

@@ -21,10 +21,12 @@ export const tableWrap = css({
   minHeight: "0",
   flex: "1",
 });
+
 export const table = css({
   width: "100%",
   borderCollapse: "collapse",
   fontSize: "sm",
+  tableLayout: "fixed",
 });
 
 export const headCell = css({
@@ -37,9 +39,32 @@ export const headCell = css({
   borderBottomStyle: "solid",
   borderBottomColor: "border.primary",
   whiteSpace: "nowrap",
+  width: "17.5rem",
 });
 
-export const cell = css({
+export const stageHeadCell = css({
+  paddingBlock: "xs",
+  paddingInline: "xs",
+  textAlign: "left",
+  fontWeight: "medium",
+  color: "text.sub",
+  borderBottomWidth: "1px",
+  borderBottomStyle: "solid",
+  borderBottomColor: "border.primary",
+  whiteSpace: "nowrap",
+});
+
+export const companyCell = css({
+  paddingBlock: "xs",
+  paddingInline: "xs",
+  verticalAlign: "middle",
+  borderBottomWidth: "1px",
+  borderBottomStyle: "solid",
+  borderBottomColor: "border.secondary",
+  width: "17.5rem",
+});
+
+export const stageCell = css({
   paddingBlock: "xs",
   paddingInline: "xs",
   verticalAlign: "middle",
@@ -69,42 +94,82 @@ export const initials = css({
   fontWeight: "semibold",
 });
 
+export const companyText = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "1px",
+  minWidth: "0",
+});
+
 export const companyName = css({
   margin: "0",
+  color: "text.main",
+  whiteSpace: "nowrap",
+});
+
+export const jobTitle = css({
+  margin: "0",
+  fontSize: "xs",
+  color: "text.sub",
+  whiteSpace: "nowrap",
   overflow: "hidden",
   textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  color: "text.main",
 });
 
 export const stepper = css({
+  position: "relative",
+  minWidth: "22rem",
+  width: "100%",
+});
+
+export const rail = css({
+  position: "absolute",
+  top: "5px",
+  left: "6px",
+  right: "6px",
+  height: "2px",
+  pointerEvents: "none",
+});
+
+export const railBase = css({
+  position: "absolute",
+  inset: "0",
+  backgroundColor: "border.primary",
+});
+
+export const railFill = css({
+  position: "absolute",
+  top: "0",
+  left: "0",
+  bottom: "0",
+  backgroundColor: "brand.primary.main",
+});
+
+export const steps = css({
+  position: "relative",
   display: "flex",
   alignItems: "flex-start",
-  minWidth: "14rem",
+  width: "100%",
 });
 
-export const step = css({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  flex: "1",
-  minWidth: "0",
-  position: "relative",
-});
-
-export const stepLine = cva({
+export const step = cva({
   base: {
-    position: "absolute",
-    top: "6px",
-    left: "50%",
-    width: "100%",
-    height: "2px",
+    display: "flex",
+    flexDirection: "column",
+    flex: "1",
+    minWidth: "0",
+    position: "relative",
+    zIndex: "default",
   },
   variants: {
-    filled: {
-      true: { backgroundColor: "brand.primary.main" },
-      false: { backgroundColor: "border.primary" },
+    align: {
+      start: { alignItems: "flex-start" },
+      center: { alignItems: "center" },
+      end: { alignItems: "flex-end" },
     },
+  },
+  defaultVariants: {
+    align: "center",
   },
 });
 
@@ -113,9 +178,10 @@ export const stepDot = cva({
     width: "12px",
     height: "12px",
     borderRadius: "full",
-    zIndex: "default",
+    flexShrink: "0",
     borderWidth: "2px",
     borderStyle: "solid",
+    backgroundColor: "background.sub",
   },
   variants: {
     state: {
@@ -138,12 +204,6 @@ export const stepDot = cva({
 export const stepLabel = css({
   marginTop: "2px",
   fontSize: "xs",
-  color: "text.sub",
-  textAlign: "center",
-  whiteSpace: "nowrap",
-});
-
-export const updated = css({
   color: "text.sub",
   whiteSpace: "nowrap",
 });
