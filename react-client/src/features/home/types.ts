@@ -106,13 +106,6 @@ export type UpcomingSelection = {
   kind: CalendarEventKind;
 };
 
-export type WeeklyDaySchedule = {
-  date: string;
-  taskCount: number;
-  interviewCount: number;
-  deadlineCount: number;
-};
-
 export type DashboardData = {
   calendar: DashboardCalendar;
   todayTasks: TodayTask[];
@@ -120,5 +113,4 @@ export type DashboardData = {
   stats: DashboardStats;
   companyProgress: CompanyProgress[];
   upcomingSelections: UpcomingSelection[];
-  weeklySchedule: WeeklyDaySchedule[];
 };

@@ -37,7 +37,7 @@ export const bottomRow = css({
   gap: "sm",
   minHeight: "0",
   lg: {
-    gridTemplateColumns: "1.6fr 1fr 0.9fr",
+    gridTemplateColumns: "2.3fr 1.2fr",
   },
 });
 

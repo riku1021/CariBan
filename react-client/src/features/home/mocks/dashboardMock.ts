@@ -260,13 +260,4 @@ export const dashboardMock: DashboardData = {
       kind: "webTest",
     },
   ],
-  weeklySchedule: [
-    { date: "2025-05-12", taskCount: 0, interviewCount: 0, deadlineCount: 0 },
-    { date: "2025-05-13", taskCount: 0, interviewCount: 1, deadlineCount: 0 },
-    { date: "2025-05-14", taskCount: 3, interviewCount: 0, deadlineCount: 0 },
-    { date: "2025-05-15", taskCount: 2, interviewCount: 1, deadlineCount: 1 },
-    { date: "2025-05-16", taskCount: 1, interviewCount: 0, deadlineCount: 1 },
-    { date: "2025-05-17", taskCount: 0, interviewCount: 0, deadlineCount: 1 },
-    { date: "2025-05-18", taskCount: 0, interviewCount: 0, deadlineCount: 0 },
-  ],
 };

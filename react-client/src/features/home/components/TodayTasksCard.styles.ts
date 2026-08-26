@@ -35,6 +35,14 @@ export const progressFill = css({
   borderRadius: "full",
 });
 
+export const listWrap = css({
+  position: "relative",
+  display: "flex",
+  flexDirection: "column",
+  flex: "1",
+  minHeight: "0",
+});
+
 export const list = css({
   display: "flex",
   flexDirection: "column",
@@ -45,6 +53,24 @@ export const list = css({
   flex: "1",
   minHeight: "0",
   overflowY: "auto",
+});
+
+export const moreHint = css({
+  position: "absolute",
+  insetInline: "0",
+  bottom: "0",
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "center",
+  paddingTop: "lg",
+  paddingBottom: "xs",
+  margin: "0",
+  backgroundImage: "linear-gradient(to top, {colors.background.sub} 35%, transparent)",
+  pointerEvents: "none",
+  fontSize: "xs",
+  fontWeight: "semibold",
+  color: "text.sub",
+  lineHeight: "none",
 });
 
 export const item = cva({

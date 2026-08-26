@@ -8,7 +8,6 @@ import { StatSummaryCards } from "./StatSummaryCards";
 import { TodayTasksCard } from "./TodayTasksCard";
 import { UpcomingDeadlinesCard } from "./UpcomingDeadlinesCard";
 import { UpcomingSelectionsCard } from "./UpcomingSelectionsCard";
-import { WeeklyScheduleCard } from "./WeeklyScheduleCard";
 
 export function HomePage() {
   const { data, isPending, isError, error } = useDashboardQuery();
@@ -43,7 +42,6 @@ export function HomePage() {
       <div className={styles.bottomRow}>
         <CompanyProgressCard companies={data.companyProgress} />
         <UpcomingSelectionsCard selections={data.upcomingSelections} />
-        <WeeklyScheduleCard days={data.weeklySchedule} todayDate={data.calendar.todayDate} />
       </div>
     </section>
   );

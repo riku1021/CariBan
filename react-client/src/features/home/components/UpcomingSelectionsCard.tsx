@@ -34,7 +34,7 @@ export function UpcomingSelectionsCard({ selections }: UpcomingSelectionsCardPro
     <section className={layout.card}>
       <div className={styles.header}>
         <div className={styles.headerRow}>
-          <h2 className={layout.cardTitle}>直近の選考予定</h2>
+          <h2 className={layout.cardTitle}>直近7日間の予定</h2>
           <p className={styles.summary}>
             {interviewCount > 0 ? `面接 ${interviewCount}件` : `${selections.length}件`}
           </p>
