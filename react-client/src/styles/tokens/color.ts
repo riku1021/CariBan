@@ -8,8 +8,8 @@ import { adjustLightness } from "../utils/color-utils";
 // 基本カラー値の定義
 const baseColors = {
   brand: {
-    primary: "#ff6800",
-    // primary: "#007bff",
+    // primary: "#ff6800",
+    primary: "#007bff",
     secondary: "#04ddb3",
     accent: "#f8313e",
   },
