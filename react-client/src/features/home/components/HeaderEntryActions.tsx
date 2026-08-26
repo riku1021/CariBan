@@ -31,7 +31,8 @@ export function HeaderEntryActions() {
         aria-label="タスクを追加"
         onClick={() => setIsTaskOpen(true)}
       >
-        <FaTasks className={styles.icon} />
+        <FaTasks className={styles.icon} aria-hidden="true" />
+        タスク＋
       </button>
       <button
         type="button"
@@ -39,7 +40,8 @@ export function HeaderEntryActions() {
         aria-label="予定を追加"
         onClick={() => setIsScheduleOpen(true)}
       >
-        <FaCalendarPlus className={styles.icon} />
+        <FaCalendarPlus className={styles.icon} aria-hidden="true" />
+        予定＋
       </button>
 
       <AddTaskModal
