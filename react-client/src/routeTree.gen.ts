@@ -15,6 +15,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AlertIndexRouteImport } from './routes/alert/index'
 import { Route as CompaniesIndexRouteImport } from './routes/companies/index'
 import { Route as ContactIndexRouteImport } from './routes/contact/index'
+import { Route as InterviewPrepIndexRouteImport } from './routes/interview-prep/index'
 import { Route as PartnerIndexRouteImport } from './routes/partner/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as SchedulesIndexRouteImport } from './routes/schedules/index'
@@ -22,6 +23,7 @@ import { Route as SelectionsIndexRouteImport } from './routes/selections/index'
 import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as UserIndexRouteImport } from './routes/user/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as InterviewPrepPrepIdIndexRouteImport } from './routes/interview-prep/$prepId/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,6 +53,11 @@ const CompaniesIndexRoute = CompaniesIndexRouteImport.update({
 const ContactIndexRoute = ContactIndexRouteImport.update({
   id: '/contact/',
   path: '/contact/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InterviewPrepIndexRoute = InterviewPrepIndexRouteImport.update({
+  id: '/interview-prep/',
+  path: '/interview-prep/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnerIndexRoute = PartnerIndexRouteImport.update({
@@ -88,6 +95,12 @@ const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
   path: '/admin/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InterviewPrepPrepIdIndexRoute =
+  InterviewPrepPrepIdIndexRouteImport.update({
+    id: '/interview-prep/$prepId/',
+    path: '/interview-prep/$prepId/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -96,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/alert/': typeof AlertIndexRoute
   '/companies/': typeof CompaniesIndexRoute
   '/contact/': typeof ContactIndexRoute
+  '/interview-prep/': typeof InterviewPrepIndexRoute
   '/partner/': typeof PartnerIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/schedules/': typeof SchedulesIndexRoute
@@ -103,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/tasks/': typeof TasksIndexRoute
   '/user/': typeof UserIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/interview-prep/$prepId/': typeof InterviewPrepPrepIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -111,6 +126,7 @@ export interface FileRoutesByTo {
   '/alert': typeof AlertIndexRoute
   '/companies': typeof CompaniesIndexRoute
   '/contact': typeof ContactIndexRoute
+  '/interview-prep': typeof InterviewPrepIndexRoute
   '/partner': typeof PartnerIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/schedules': typeof SchedulesIndexRoute
@@ -118,6 +134,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof TasksIndexRoute
   '/user': typeof UserIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/interview-prep/$prepId': typeof InterviewPrepPrepIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -127,6 +144,7 @@ export interface FileRoutesById {
   '/alert/': typeof AlertIndexRoute
   '/companies/': typeof CompaniesIndexRoute
   '/contact/': typeof ContactIndexRoute
+  '/interview-prep/': typeof InterviewPrepIndexRoute
   '/partner/': typeof PartnerIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/schedules/': typeof SchedulesIndexRoute
@@ -134,6 +152,7 @@ export interface FileRoutesById {
   '/tasks/': typeof TasksIndexRoute
   '/user/': typeof UserIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/interview-prep/$prepId/': typeof InterviewPrepPrepIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -144,6 +163,7 @@ export interface FileRouteTypes {
     | '/alert/'
     | '/companies/'
     | '/contact/'
+    | '/interview-prep/'
     | '/partner/'
     | '/profile/'
     | '/schedules/'
@@ -151,6 +171,7 @@ export interface FileRouteTypes {
     | '/tasks/'
     | '/user/'
     | '/admin/dashboard/'
+    | '/interview-prep/$prepId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -159,6 +180,7 @@ export interface FileRouteTypes {
     | '/alert'
     | '/companies'
     | '/contact'
+    | '/interview-prep'
     | '/partner'
     | '/profile'
     | '/schedules'
@@ -166,6 +188,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/user'
     | '/admin/dashboard'
+    | '/interview-prep/$prepId'
   id:
     | '__root__'
     | '/'
@@ -174,6 +197,7 @@ export interface FileRouteTypes {
     | '/alert/'
     | '/companies/'
     | '/contact/'
+    | '/interview-prep/'
     | '/partner/'
     | '/profile/'
     | '/schedules/'
@@ -181,6 +205,7 @@ export interface FileRouteTypes {
     | '/tasks/'
     | '/user/'
     | '/admin/dashboard/'
+    | '/interview-prep/$prepId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,6 +215,7 @@ export interface RootRouteChildren {
   AlertIndexRoute: typeof AlertIndexRoute
   CompaniesIndexRoute: typeof CompaniesIndexRoute
   ContactIndexRoute: typeof ContactIndexRoute
+  InterviewPrepIndexRoute: typeof InterviewPrepIndexRoute
   PartnerIndexRoute: typeof PartnerIndexRoute
   ProfileIndexRoute: typeof ProfileIndexRoute
   SchedulesIndexRoute: typeof SchedulesIndexRoute
@@ -197,6 +223,7 @@ export interface RootRouteChildren {
   TasksIndexRoute: typeof TasksIndexRoute
   UserIndexRoute: typeof UserIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  InterviewPrepPrepIdIndexRoute: typeof InterviewPrepPrepIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -241,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact/'
       preLoaderRoute: typeof ContactIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/interview-prep/': {
+      id: '/interview-prep/'
+      path: '/interview-prep'
+      fullPath: '/interview-prep/'
+      preLoaderRoute: typeof InterviewPrepIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partner/': {
@@ -292,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/interview-prep/$prepId/': {
+      id: '/interview-prep/$prepId/'
+      path: '/interview-prep/$prepId'
+      fullPath: '/interview-prep/$prepId/'
+      preLoaderRoute: typeof InterviewPrepPrepIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -302,6 +343,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlertIndexRoute: AlertIndexRoute,
   CompaniesIndexRoute: CompaniesIndexRoute,
   ContactIndexRoute: ContactIndexRoute,
+  InterviewPrepIndexRoute: InterviewPrepIndexRoute,
   PartnerIndexRoute: PartnerIndexRoute,
   ProfileIndexRoute: ProfileIndexRoute,
   SchedulesIndexRoute: SchedulesIndexRoute,
@@ -309,6 +351,7 @@ const rootRouteChildren: RootRouteChildren = {
   TasksIndexRoute: TasksIndexRoute,
   UserIndexRoute: UserIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  InterviewPrepPrepIdIndexRoute: InterviewPrepPrepIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

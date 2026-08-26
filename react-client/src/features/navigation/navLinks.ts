@@ -2,6 +2,7 @@ import {
   FaBuilding as Building,
   FaCalendarAlt as Calendar,
   FaClipboardList as ClipboardList,
+  FaComments as Comments,
   FaTasks as Tasks,
 } from "react-icons/fa";
 import { IoHome as Home } from "react-icons/io5";
@@ -32,6 +33,11 @@ export const navLinks: NavLink[] = [
     to: "/tasks",
     label: "タスク一覧",
     icon: Tasks,
+  },
+  {
+    to: "/interview-prep",
+    label: "面接準備",
+    icon: Comments,
   },
   {
     to: "/schedules",
