@@ -14,6 +14,8 @@
     "preview": "tsc -b && dotenvx run -f envs/.env.prod --no-native -- vite build --mode prod && dotenvx run -f envs/.env.prod --no-native -- vite preview",
     "preview:serve": "dotenvx run -f envs/.env.prod --no-native -- vite preview",
     "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepare": "panda codegen"
   },
   "dependencies": {
@@ -42,7 +44,8 @@
     "@vitejs/plugin-react-swc": "^3.8.0",
     "typescript": "~5.7.2",
     "vite": "^6.2.0",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "vitest": "^4.1.11"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -13,6 +13,9 @@ const baseColors = {
     secondary: "#04ddb3",
     accent: "#f8313e",
   },
+  calendar: {
+    saturday: "#007bff",
+  },
   status: {
     success: "#28a745",
     warning: "#ffc107",
@@ -42,6 +45,10 @@ export const colorTokens = {
       light: { value: adjustLightness(baseColors.brand.secondary, 48.5) },
     },
     accent: { value: baseColors.brand.accent },
+  },
+
+  calendar: {
+    saturday: { value: baseColors.calendar.saturday },
   },
 
   // 状態カラー

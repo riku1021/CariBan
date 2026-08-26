@@ -51,6 +51,10 @@ run = 'docker compose --env-file fastapi-server/envs/.env.keys --profile prod up
 description = "Go dev"
 run = 'docker compose --env-file go-server/envs/.env.keys --profile go-dev up --build'
 
+[tasks."compose:go-dev:down"]
+description = "Go dev の Compose を停止・削除"
+run = 'docker compose --env-file go-server/envs/.env.keys --profile go-dev down'
+
 [tasks."compose:go-prod"]
 description = "Go prod"
 run = 'docker compose --env-file go-server/envs/.env.keys --profile go-prod up --build'

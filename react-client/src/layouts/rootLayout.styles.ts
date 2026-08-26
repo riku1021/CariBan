@@ -15,7 +15,8 @@ export const rootLayout = css({
 export const mainContent = css({
   gridArea: "main",
   minWidth: "0",
+  minHeight: "0",
   overflow: "auto",
-  padding: "lg",
+  padding: "sm",
   boxSizing: "border-box",
 });

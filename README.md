@@ -161,7 +161,7 @@ docker compose --env-file go-server/envs/.env.keys --profile go-dev up --build
 
 ```sh
 docker compose --profile dev down
-docker compose --profile go-dev down
+mise run compose:go-dev:down
 ```
 
 ### ローカル（Docker なし）

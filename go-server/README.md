@@ -9,6 +9,7 @@ cd go-server
 go mod download
 mise run go:dev              # dotenvx で env 復号 → go run
 mise run compose:go-dev      # Docker Compose（Go dev）
+mise run compose:go-dev:down # Docker Compose（Go dev）停止
 go test ./...
 gofmt -w .
 go vet ./...
