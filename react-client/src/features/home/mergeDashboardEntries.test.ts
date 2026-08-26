@@ -54,6 +54,7 @@ describe("mergeDashboardEntries", () => {
         },
       ],
       addedCalendarEvents: [{ date: "2025-05-16", kind: "interview" }],
+      addedCompanies: [],
     });
 
     expect(merged.todayTasks[0]?.id).toBe("task-new");

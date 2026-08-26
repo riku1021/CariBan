@@ -3,6 +3,7 @@ import { useMemo } from "react";
 
 import {
   addedCalendarEventsAtom,
+  addedCompaniesAtom,
   addedSelectionsAtom,
   addedTasksAtom,
 } from "../atoms/entriesAtoms";
@@ -14,6 +15,7 @@ export function useDashboardWithEntries() {
   const addedTasks = useAtomValue(addedTasksAtom);
   const addedSelections = useAtomValue(addedSelectionsAtom);
   const addedCalendarEvents = useAtomValue(addedCalendarEventsAtom);
+  const addedCompanies = useAtomValue(addedCompaniesAtom);
 
   const data = useMemo(() => {
     if (!query.data) {
@@ -24,8 +26,9 @@ export function useDashboardWithEntries() {
       addedTasks,
       addedSelections,
       addedCalendarEvents,
+      addedCompanies,
     });
-  }, [query.data, addedTasks, addedSelections, addedCalendarEvents]);
+  }, [query.data, addedTasks, addedSelections, addedCalendarEvents, addedCompanies]);
 
   return {
     ...query,

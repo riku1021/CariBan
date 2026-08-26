@@ -207,13 +207,14 @@ export const row = cva({
     borderBottomColor: "border.primary",
     cursor: "pointer",
     _hover: {
-      backgroundColor: "background.main",
+      backgroundColor: "background.hover",
     },
   },
   variants: {
     selected: {
       true: {
-        backgroundColor: "background.main",
+        backgroundColor: "background.hover",
+        boxShadow: "inset 3px 0 0 {colors.brand.primary.main}",
       },
     },
   },

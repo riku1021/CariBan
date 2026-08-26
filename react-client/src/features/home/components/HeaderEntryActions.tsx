@@ -1,17 +1,24 @@
 import { useState } from "react";
-import { FaCalendarPlus, FaTasks } from "react-icons/fa";
+import { FaBuilding, FaCalendarPlus, FaTasks } from "react-icons/fa";
 
 import { SuccessModal } from "@/components/AlertModal";
 
+import { AddCompanyModal } from "./AddCompanyModal";
 import { AddScheduleModal } from "./AddScheduleModal";
 import { AddTaskModal } from "./AddTaskModal";
 import * as styles from "./HeaderEntryActions.styles";
 
 export function HeaderEntryActions() {
+  const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const [isTaskOpen, setIsTaskOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [successText, setSuccessText] = useState("");
+
+  const handleCompanyCreated = () => {
+    setSuccessText("企業を追加しました");
+    setIsSuccessOpen(true);
+  };
 
   const handleTaskCreated = () => {
     setSuccessText("タスクを追加しました");
@@ -25,6 +32,15 @@ export function HeaderEntryActions() {
 
   return (
     <>
+      <button
+        type="button"
+        className={styles.iconButton}
+        aria-label="企業を追加"
+        onClick={() => setIsCompanyOpen(true)}
+      >
+        <FaBuilding className={styles.icon} aria-hidden="true" />
+        企業＋
+      </button>
       <button
         type="button"
         className={styles.iconButton}
@@ -44,6 +60,11 @@ export function HeaderEntryActions() {
         予定＋
       </button>
 
+      <AddCompanyModal
+        isOpen={isCompanyOpen}
+        onClose={() => setIsCompanyOpen(false)}
+        onCreated={handleCompanyCreated}
+      />
       <AddTaskModal
         isOpen={isTaskOpen}
         onClose={() => setIsTaskOpen(false)}

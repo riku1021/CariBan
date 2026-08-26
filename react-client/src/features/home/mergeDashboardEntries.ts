@@ -1,5 +1,11 @@
 import type { AddedCalendarEvent } from "./atoms/entriesAtoms";
-import type { DashboardCalendar, DashboardData, TodayTask, UpcomingSelection } from "./types";
+import type {
+  CompanyProgress,
+  DashboardCalendar,
+  DashboardData,
+  TodayTask,
+  UpcomingSelection,
+} from "./types";
 
 function mergeCalendar(
   calendar: DashboardCalendar,
@@ -32,6 +38,7 @@ type MergeDashboardEntriesParams = {
   addedTasks: TodayTask[];
   addedSelections: UpcomingSelection[];
   addedCalendarEvents: AddedCalendarEvent[];
+  addedCompanies: CompanyProgress[];
 };
 
 export function mergeDashboardEntries({
@@ -39,11 +46,13 @@ export function mergeDashboardEntries({
   addedTasks,
   addedSelections,
   addedCalendarEvents,
+  addedCompanies,
 }: MergeDashboardEntriesParams): DashboardData {
   return {
     ...data,
     todayTasks: [...addedTasks, ...data.todayTasks],
     upcomingSelections: [...addedSelections, ...data.upcomingSelections],
     calendar: mergeCalendar(data.calendar, addedCalendarEvents),
+    companyProgress: [...addedCompanies, ...data.companyProgress],
   };
 }

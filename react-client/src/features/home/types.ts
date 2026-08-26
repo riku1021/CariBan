@@ -91,6 +91,24 @@ export type CreateScheduleInput = {
   stageId: string | null;
 };
 
+export const COMPANY_JOB_TITLES = [
+  "バックエンド",
+  "フロントエンド",
+  "SE",
+  "ビジネス",
+  "デザイン",
+  "プロダクト",
+] as const;
+
+export type CompanyJobTitle = (typeof COMPANY_JOB_TITLES)[number];
+
+export type CreateCompanyInput = {
+  name: string;
+  jobTitle: CompanyJobTitle;
+  currentStageId: SelectionStageId;
+  appliedDate: string;
+};
+
 export type CompanyOption = {
   id: string;
   name: string;
