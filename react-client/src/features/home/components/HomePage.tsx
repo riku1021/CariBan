@@ -29,6 +29,14 @@ export function HomePage() {
     );
   }
 
+  if (!data) {
+    return (
+      <section className={styles.page}>
+        <p className={styles.statusText}>ダッシュボードを読み込んでいます...</p>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.page}>
       <div className={styles.topRow}>

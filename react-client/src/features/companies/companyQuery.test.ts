@@ -75,12 +75,12 @@ describe("sortCompanies / summarize", () => {
       company({
         id: "a",
         shortName: "B社",
-        nextAction: { title: "x", dueLabel: "あと3日", urgency: "soon" },
+        nextAction: { title: "x", dueLabel: "あと3日", scheduleLabel: "金曜まで", urgency: "soon" },
       }),
       company({
         id: "b",
         shortName: "A社",
-        nextAction: { title: "y", dueLabel: "今日", urgency: "today" },
+        nextAction: { title: "y", dueLabel: "今日", scheduleLabel: "今日 18:00", urgency: "today" },
       }),
     ];
     expect(sortCompanies(companies, "dueSoon").map((item) => item.id)).toEqual(["b", "a"]);
