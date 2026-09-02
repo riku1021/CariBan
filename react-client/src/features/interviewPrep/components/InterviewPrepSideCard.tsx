@@ -13,6 +13,8 @@ import {
   FaVideo,
 } from "react-icons/fa";
 
+import { SelectionStageStepper } from "@/components/SelectionStageStepper";
+
 import { formatCountdown, formatScheduleLabel, prepPercent } from "../interviewPrepDate";
 import {
   INTERVIEW_FORMAT_LABELS,
@@ -26,29 +28,6 @@ type InterviewPrepSideCardProps = {
   now: Date;
 };
 
-function stepState(index: number, currentIndex: number): "done" | "current" | "todo" {
-  if (index < currentIndex) {
-    return "done";
-  }
-  if (index === currentIndex) {
-    return "current";
-  }
-  return "todo";
-}
-
-function railFillPercent(currentIndex: number, stageCount: number): number {
-  if (stageCount <= 1) {
-    return currentIndex >= 0 ? 100 : 0;
-  }
-  if (currentIndex <= 0) {
-    return 0;
-  }
-  if (currentIndex >= stageCount - 1) {
-    return 100;
-  }
-  return (currentIndex / (stageCount - 1)) * 100;
-}
-
 function isOverdueCountdown(label: string): boolean {
   return label.includes("超過");
 }
@@ -59,7 +38,6 @@ function isUrgentDue(dueLabel: string): boolean {
 
 export function InterviewPrepSideCard({ detail, now }: InterviewPrepSideCardProps) {
   const percent = prepPercent(detail);
-  const stageCount = detail.stages.length;
   const scheduleLabel = detail.scheduledAt
     ? formatScheduleLabel(detail.scheduledAt, now)
     : "日時未定";
@@ -150,29 +128,10 @@ export function InterviewPrepSideCard({ detail, now }: InterviewPrepSideCardProp
 
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>選考フロー</h3>
-        <div className={styles.stepper}>
-          <div className={styles.rail} aria-hidden="true">
-            <span className={styles.railBase} />
-            <span
-              className={styles.railFill}
-              style={{ width: `${railFillPercent(detail.currentStageIndex, stageCount)}%` }}
-            />
-          </div>
-          <div className={styles.steps}>
-            {detail.stages.map((stage, index) => {
-              const state = stepState(index, detail.currentStageIndex);
-              return (
-                <div key={stage.id} className={styles.step}>
-                  <span className={styles.stepDot({ state })} aria-hidden="true">
-                    {state === "done" ? <FaCheck /> : null}
-                    {state === "current" ? <span className={styles.stepCurrentCore} /> : null}
-                  </span>
-                  <span className={styles.stepLabel}>{stage.label}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <SelectionStageStepper
+          stages={detail.stages}
+          currentStageIndex={detail.currentStageIndex}
+        />
       </section>
 
       <section className={styles.section}>

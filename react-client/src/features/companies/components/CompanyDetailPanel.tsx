@@ -1,7 +1,6 @@
 import {
   FaCalendarAlt,
   FaChartBar,
-  FaCheck,
   FaChevronRight,
   FaClock,
   FaCode,
@@ -16,6 +15,8 @@ import {
   FaUser,
 } from "react-icons/fa";
 
+import { SelectionStageStepper } from "@/components/SelectionStageStepper";
+
 import { COMPANY_JOB_TYPE_LABELS, COMPANY_STATUS_LABELS, type CompanyItem } from "../types";
 import * as styles from "./CompanyDetailPanel.styles";
 import * as listStyles from "./CompanyListSection.styles";
@@ -24,42 +25,6 @@ type CompanyDetailPanelProps = {
   company: CompanyItem | null;
   onClose: () => void;
 };
-
-function stepState(index: number, currentIndex: number): "done" | "current" | "todo" {
-  if (index < currentIndex) {
-    return "done";
-  }
-  if (index === currentIndex) {
-    return "current";
-  }
-  return "todo";
-}
-
-function railFillPercent(currentIndex: number, stageCount: number): number {
-  if (stageCount <= 1) {
-    return currentIndex >= 0 ? 100 : 0;
-  }
-  if (currentIndex <= 0) {
-    return 0;
-  }
-  if (currentIndex >= stageCount - 1) {
-    return 100;
-  }
-  return ((currentIndex + 0.5) / stageCount) * 100;
-}
-
-function stepAlign(index: number, stageCount: number): "start" | "center" | "end" {
-  if (stageCount <= 1) {
-    return "center";
-  }
-  if (index === 0) {
-    return "start";
-  }
-  if (index === stageCount - 1) {
-    return "end";
-  }
-  return "center";
-}
 
 export function CompanyDetailPanel({ company, onClose }: CompanyDetailPanelProps) {
   if (!company) {
@@ -71,7 +36,6 @@ export function CompanyDetailPanel({ company, onClose }: CompanyDetailPanelProps
     );
   }
 
-  const stageCount = company.stages.length;
   const currentStageLabel =
     company.stages[company.currentStageIndex]?.label ?? company.currentStage;
 
@@ -111,31 +75,10 @@ export function CompanyDetailPanel({ company, onClose }: CompanyDetailPanelProps
             <FaChartBar className={styles.sectionIcon} aria-hidden="true" />
             選考フェーズ
           </h3>
-          <div className={styles.stepper}>
-            <div className={styles.rail} aria-hidden="true">
-              <span className={styles.railBase} />
-              <span
-                className={styles.railFill}
-                style={{ width: `${railFillPercent(company.currentStageIndex, stageCount)}%` }}
-              />
-            </div>
-            <div className={styles.steps}>
-              {company.stages.map((stage, index) => {
-                const state = stepState(index, company.currentStageIndex);
-                return (
-                  <div
-                    key={stage.id}
-                    className={styles.step({ align: stepAlign(index, stageCount) })}
-                  >
-                    <span className={styles.stepDot({ state })} aria-hidden="true">
-                      {state === "done" ? <FaCheck /> : null}
-                    </span>
-                    <span className={styles.stepLabel}>{stage.label}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <SelectionStageStepper
+            stages={company.stages}
+            currentStageIndex={company.currentStageIndex}
+          />
           <p className={styles.currentStageBar}>
             現在の選考：
             <span className={styles.currentStageValue}>{currentStageLabel}</span>
