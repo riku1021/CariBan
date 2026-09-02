@@ -15,6 +15,8 @@ type AddScheduleModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onCreated?: () => void;
+  /** 指定時は種別を固定し、種別セレクトを非表示にする */
+  fixedKind?: CalendarEventKind;
 };
 
 const DEFAULT_KIND: CalendarEventKind = "interview";
@@ -22,7 +24,15 @@ const DEFAULT_KIND: CalendarEventKind = "interview";
 /** 選考フローに紐づきやすい予定種別 */
 const STAGE_RELATED_KINDS: CalendarEventKind[] = ["esDeadline", "interview", "webTest"];
 
-export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModalProps) {
+const MODAL_TITLES: Partial<Record<CalendarEventKind, string>> = {
+  interview: "面接を追加",
+};
+
+const MODAL_HINTS: Partial<Record<CalendarEventKind, string>> = {
+  interview: "面接の日時を登録します。カレンダーと直近の選考予定に反映されます。",
+};
+
+export function AddScheduleModal({ isOpen, onClose, onCreated, fixedKind }: AddScheduleModalProps) {
   const setAddedSelections = useSetAtom(addedSelectionsAtom);
   const setAddedCalendarEvents = useSetAtom(addedCalendarEventsAtom);
   const { data: companies = [], isPending: isCompaniesPending } = useCompanyOptionsQuery();
@@ -37,6 +47,14 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const initialKind = fixedKind ?? DEFAULT_KIND;
+  const fieldPrefix = fixedKind ? `schedule-${fixedKind}` : "schedule";
+  const modalTitle = fixedKind ? (MODAL_TITLES[fixedKind] ?? "予定を追加") : "予定を追加";
+  const modalHint = fixedKind
+    ? (MODAL_HINTS[fixedKind] ??
+      "予定はカレンダーに載る確定枠です。自分の作業は「タスク」から追加してください。")
+    : "予定はカレンダーに載る確定枠です（面接・説明会・Webテスト実施など）。自分の作業は「タスク」から追加してください。";
+
   const selectedCompany = companies.find((company) => company.id === companyId);
   const showStage =
     STAGE_RELATED_KINDS.includes(kind) &&
@@ -46,8 +64,8 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
     if (!isOpen) {
       return;
     }
-    setKind(DEFAULT_KIND);
-    setTitle(EVENT_KIND_LABELS[DEFAULT_KIND]);
+    setKind(initialKind);
+    setTitle(EVENT_KIND_LABELS[initialKind]);
     setDate("");
     setStartTime("10:00");
     setEndTime("11:00");
@@ -55,9 +73,12 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
     setStageId("");
     setErrorMessage("");
     setIsSubmitting(false);
-  }, [isOpen]);
+  }, [isOpen, initialKind]);
 
   const handleKindChange = (nextKind: CalendarEventKind) => {
+    if (fixedKind) {
+      return;
+    }
     setKind(nextKind);
     setTitle(EVENT_KIND_LABELS[nextKind]);
     if (!STAGE_RELATED_KINDS.includes(nextKind)) {
@@ -94,7 +115,7 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
     setIsSubmitting(true);
     try {
       const created = await createSchedule({
-        kind,
+        kind: fixedKind ?? kind,
         title: title.trim(),
         date,
         startTime,
@@ -118,37 +139,37 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
   };
 
   return (
-    <FormModal isOpen={isOpen} onClose={onClose} title="予定を追加">
+    <FormModal isOpen={isOpen} onClose={onClose} title={modalTitle}>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <p className={styles.hint}>
-          予定はカレンダーに載る確定枠です（面接・説明会・Webテスト実施など）。自分の作業は「タスク」から追加してください。
-        </p>
+        <p className={styles.hint}>{modalHint}</p>
+
+        {fixedKind ? null : (
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor={`${fieldPrefix}-kind`}>
+              種別
+            </label>
+            <select
+              id={`${fieldPrefix}-kind`}
+              className={styles.select}
+              value={kind}
+              onChange={(event) => handleKindChange(event.target.value as CalendarEventKind)}
+              required
+            >
+              {CALENDAR_EVENT_KINDS.map((eventKind) => (
+                <option key={eventKind} value={eventKind}>
+                  {EVENT_KIND_LABELS[eventKind]}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="schedule-kind">
-            種別
-          </label>
-          <select
-            id="schedule-kind"
-            className={styles.select}
-            value={kind}
-            onChange={(event) => handleKindChange(event.target.value as CalendarEventKind)}
-            required
-          >
-            {CALENDAR_EVENT_KINDS.map((eventKind) => (
-              <option key={eventKind} value={eventKind}>
-                {EVENT_KIND_LABELS[eventKind]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="schedule-title">
+          <label className={styles.label} htmlFor={`${fieldPrefix}-title`}>
             タイトル
           </label>
           <input
-            id="schedule-title"
+            id={`${fieldPrefix}-title`}
             className={styles.input}
             type="text"
             value={title}
@@ -159,11 +180,11 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="schedule-date">
+          <label className={styles.label} htmlFor={`${fieldPrefix}-date`}>
             日付
           </label>
           <input
-            id="schedule-date"
+            id={`${fieldPrefix}-date`}
             className={styles.input}
             type="date"
             value={date}
@@ -174,11 +195,11 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
 
         <div className={styles.timeRow}>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="schedule-start-time">
+            <label className={styles.label} htmlFor={`${fieldPrefix}-start-time`}>
               開始
             </label>
             <input
-              id="schedule-start-time"
+              id={`${fieldPrefix}-start-time`}
               className={styles.input}
               type="time"
               value={startTime}
@@ -187,11 +208,11 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
             />
           </div>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="schedule-end-time">
+            <label className={styles.label} htmlFor={`${fieldPrefix}-end-time`}>
               終了
             </label>
             <input
-              id="schedule-end-time"
+              id={`${fieldPrefix}-end-time`}
               className={styles.input}
               type="time"
               value={endTime}
@@ -202,11 +223,11 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label} htmlFor="schedule-company">
+          <label className={styles.label} htmlFor={`${fieldPrefix}-company`}>
             企業
           </label>
           <select
-            id="schedule-company"
+            id={`${fieldPrefix}-company`}
             className={styles.select}
             value={companyId}
             onChange={(event) => handleCompanyChange(event.target.value)}
@@ -224,11 +245,11 @@ export function AddScheduleModal({ isOpen, onClose, onCreated }: AddScheduleModa
 
         {showStage ? (
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="schedule-stage">
+            <label className={styles.label} htmlFor={`${fieldPrefix}-stage`}>
               選考ステージ（任意）
             </label>
             <select
-              id="schedule-stage"
+              id={`${fieldPrefix}-stage`}
               className={styles.select}
               value={stageId}
               onChange={(event) => setStageId(event.target.value)}

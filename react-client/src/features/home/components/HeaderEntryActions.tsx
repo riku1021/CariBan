@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaBuilding, FaCalendarPlus, FaTasks } from "react-icons/fa";
+import { FaBuilding, FaCalendarPlus, FaComments, FaTasks } from "react-icons/fa";
 
 import { SuccessModal } from "@/components/AlertModal";
 
@@ -11,6 +11,7 @@ import * as styles from "./HeaderEntryActions.styles";
 export function HeaderEntryActions() {
   const [isCompanyOpen, setIsCompanyOpen] = useState(false);
   const [isTaskOpen, setIsTaskOpen] = useState(false);
+  const [isInterviewOpen, setIsInterviewOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [successText, setSuccessText] = useState("");
@@ -22,6 +23,11 @@ export function HeaderEntryActions() {
 
   const handleTaskCreated = () => {
     setSuccessText("タスクを追加しました");
+    setIsSuccessOpen(true);
+  };
+
+  const handleInterviewCreated = () => {
+    setSuccessText("面接を追加しました");
     setIsSuccessOpen(true);
   };
 
@@ -53,6 +59,15 @@ export function HeaderEntryActions() {
       <button
         type="button"
         className={styles.iconButton}
+        aria-label="面接を追加"
+        onClick={() => setIsInterviewOpen(true)}
+      >
+        <FaComments className={styles.icon} aria-hidden="true" />
+        面接＋
+      </button>
+      <button
+        type="button"
+        className={styles.iconButton}
         aria-label="予定を追加"
         onClick={() => setIsScheduleOpen(true)}
       >
@@ -69,6 +84,12 @@ export function HeaderEntryActions() {
         isOpen={isTaskOpen}
         onClose={() => setIsTaskOpen(false)}
         onCreated={handleTaskCreated}
+      />
+      <AddScheduleModal
+        isOpen={isInterviewOpen}
+        onClose={() => setIsInterviewOpen(false)}
+        onCreated={handleInterviewCreated}
+        fixedKind="interview"
       />
       <AddScheduleModal
         isOpen={isScheduleOpen}
