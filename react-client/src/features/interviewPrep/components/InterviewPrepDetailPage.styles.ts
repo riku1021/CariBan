@@ -16,27 +16,40 @@ export const header = css({
   minWidth: "0",
 });
 
-export const breadcrumb = css({
+export const titleWithBack = css({
   display: "flex",
   alignItems: "center",
-  gap: "xs",
-  flexWrap: "wrap",
-  margin: "0",
-  fontSize: "xs",
-  color: "text.sub",
+  gap: "sm",
+  minWidth: "0",
+  flex: "1",
 });
 
-export const breadcrumbLink = css({
+export const backButton = css({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "2px",
+  paddingBlock: "xs",
+  paddingInline: "sm",
+  borderWidth: "1px",
+  borderStyle: "solid",
+  borderColor: "brand.primary.main",
+  borderRadius: "full",
+  backgroundColor: "background.sub",
   color: "brand.primary.main",
+  fontSize: "xs",
+  fontWeight: "semibold",
   textDecoration: "none",
+  flexShrink: 0,
+  cursor: "pointer",
   _hover: {
-    textDecoration: "underline",
+    backgroundColor: "brand.primary.light",
   },
 });
 
-export const breadcrumbCurrent = css({
-  color: "text.main",
-  fontWeight: "medium",
+export const backButtonIcon = css({
+  width: "4",
+  height: "4",
+  flexShrink: 0,
 });
 
 export const titleRow = css({

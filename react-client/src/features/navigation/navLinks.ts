@@ -50,3 +50,18 @@ export const navLinks: NavLink[] = [
     icon: Account,
   },
 ];
+
+/**
+ * パス名から対応するナビゲーションリンクを取得する。
+ * 完全一致を優先し、ネストされたルートは最長のプレフィックスでマッチする。
+ */
+export function getNavLinkByPath(pathname: string): NavLink | undefined {
+  const exactMatch = navLinks.find((link) => link.to === pathname);
+  if (exactMatch) {
+    return exactMatch;
+  }
+
+  return navLinks
+    .filter((link) => link.to !== "/" && pathname.startsWith(`${link.to}/`))
+    .sort((a, b) => b.to.length - a.to.length)[0];
+}

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { FaEdit, FaEllipsisH, FaShareAlt } from "react-icons/fa";
+import { MdChevronLeft } from "react-icons/md";
 
 import { getInterviewPrepDetail } from "../mocks/interviewPrepDetailMock";
 import { INTERVIEW_PHASE_LABELS } from "../types";
@@ -34,20 +35,19 @@ export function InterviewPrepDetailPage({ prepId }: InterviewPrepDetailPageProps
   return (
     <section className={styles.page}>
       <header className={styles.header}>
-        <p className={styles.breadcrumb}>
-          <Link to="/interview-prep" className={styles.breadcrumbLink}>
-            面接準備一覧
-          </Link>
-          <span aria-hidden="true">/</span>
-          <span className={styles.breadcrumbCurrent}>{title}</span>
-        </p>
         <div className={styles.titleRow}>
-          <div className={styles.titleBlock}>
-            <div className={styles.titleLine}>
-              <h1 className={styles.title}>{title}</h1>
-              <span className={styles.phaseBadge}>{INTERVIEW_PHASE_LABELS[detail.phase]}</span>
+          <div className={styles.titleWithBack}>
+            <Link to="/interview-prep" className={styles.backButton}>
+              <MdChevronLeft className={styles.backButtonIcon} aria-hidden="true" />
+              一覧に戻る
+            </Link>
+            <div className={styles.titleBlock}>
+              <div className={styles.titleLine}>
+                <h1 className={styles.title}>{title}</h1>
+                <span className={styles.phaseBadge}>{INTERVIEW_PHASE_LABELS[detail.phase]}</span>
+              </div>
+              <p className={styles.jobLine}>職種：{detail.jobTitle}</p>
             </div>
-            <p className={styles.jobLine}>職種：{detail.jobTitle}</p>
           </div>
           <div className={styles.actions}>
             <button type="button" className={styles.iconButton} aria-label="その他">

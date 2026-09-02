@@ -17,6 +17,29 @@ export const header = css({
   gridArea: "header",
 });
 
+export const titleRow = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "xs",
+  minWidth: "0",
+});
+
+export const titleIconBox = css({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  boxSizing: "border-box",
+  flexShrink: 0,
+});
+
+export const titleIcon = css({
+  fontSize: "3xl",
+  width: "7",
+  height: "auto",
+  flexShrink: 0,
+  color: "text.main",
+});
+
 export const title = css({
   color: "text.main",
   fontSize: "3xl",
