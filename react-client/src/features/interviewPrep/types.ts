@@ -125,16 +125,38 @@ export const PREP_QA_LIST_TABS = ["common", "company", "reverse"] as const;
 
 export type PrepQaListTab = (typeof PREP_QA_LIST_TABS)[number];
 
-export const PREP_QA_VIEW_TABS = ["all", ...PREP_QA_TABS] as const;
+/** 面接準備詳細のコンテンツ切り替え（予定一覧のフィルタータブと同様） */
+export const PREP_QA_VIEW_TABS = ["all", "company", "assumed", "reverse", "memo"] as const;
 
 export type PrepQaViewTab = (typeof PREP_QA_VIEW_TABS)[number];
 
 export const PREP_QA_VIEW_TAB_LABELS: Record<PrepQaViewTab, string> = {
   all: "すべての質問",
-  ...PREP_QA_TAB_LABELS,
+  company: PREP_QA_TAB_LABELS.company,
+  assumed: PREP_QA_TAB_LABELS.assumed,
+  reverse: PREP_QA_TAB_LABELS.reverse,
+  memo: PREP_QA_TAB_LABELS.memo,
 };
 
 export type PrepQuestionStatus = "ready" | "draft" | "empty";
+
+export const PREP_QUESTION_CATEGORIES = [
+  "aboutYou",
+  "experience",
+  "career",
+  "company",
+  "reverse",
+] as const;
+
+export type PrepQuestionCategory = (typeof PREP_QUESTION_CATEGORIES)[number];
+
+export const PREP_QUESTION_CATEGORY_LABELS: Record<PrepQuestionCategory, string> = {
+  aboutYou: "ABOUT YOU（あなたについて）",
+  experience: "EXPERIENCE（経験について）",
+  career: "CAREER（キャリアについて）",
+  company: "COMPANY（企業について）",
+  reverse: "逆質問",
+};
 
 export const PREP_QUESTION_STATUS_LABELS: Record<PrepQuestionStatus, string> = {
   ready: "準備完了",
@@ -145,6 +167,9 @@ export const PREP_QUESTION_STATUS_LABELS: Record<PrepQuestionStatus, string> = {
 export type PrepQuestion = {
   id: string;
   title: string;
+  category: PrepQuestionCategory;
+  /** 面接官がこの質問で見たいこと */
+  intent: string;
   /** 閉じたときの一行プレビュー */
   snippet: string;
   /** 展開時の本文 */
